@@ -2,7 +2,7 @@
 - Might be a good idea to start using git for practice. 
 Feature timeline:
 	-performance improvement (for increased depth)
-		- limiting draw based on object size (limit children so that they are always smaller? )
+		- calculating object size more efficiently.
 		- recasting transformation matrices using SVG matrix objects (faster multiplication times?)
 		- pre-calculating depth based on operation limit, children, trunk size
 		- going to 30 fps
@@ -43,32 +43,29 @@ var fractal = {
 	trunk: [],
 	children: [],
 	draw: function(){
-		var transformationArray = [];
 
-		function helper(d){
-			if( d === meta.maxDepth){
+		function helper(d, objArray){
+			// filter objArray, discluding small objects
+			objArray = filter(objArray, (obj) => obj.size > 2);
+
+			if( d === meta.maxDepth || !objArray){
 				return;
 			}
 
-			if(transformationArray.length === 0){
-				for (var i = 0; i < fractal.trunk.length; i++){
-					fractal.trunk[i].draw();
-				}
-			} else {
-				for (var i = 0; i < fractal.trunk.length; i++){
-					transformationArray.reduce((acc, cur) => cur.apply(acc), fractal.trunk[i]).draw();
-				}
+			let temp = [];
+			// draw the elements of obj array, fill temp
+			for(var i = 0; i < objArray.length; i++){
+				objArray[i].draw();
 			}
-
-			for (var i = 0; i < fractal.children.length; i++){
-				transformationArray.push(fractal.children[i].transformation);
-				helper(d+1);
-				transformationArray.pop();
+			// iterate over transformation array
+			for (var j = 0; j<fractal.children.length; j++){
+			//	for each, apply the transformation to a copy of objArray and recursively call helper.
+				let trans = fractal.children[j].transformation;
+				objArray.forEach((obj, idx) => temp[idx] = trans.apply(objArray[idx]));
+				helper(d + 1, temp);
 			}
 		}
-
-		helper(0);
-		
+		helper(0, fractal.trunk);
 	},
 	pushNewObject : function(start, end){
 		if(meta.style === "line"){
@@ -102,7 +99,8 @@ var fractal = {
 			var line = new Line(start, {x:start.x, y:start.y});
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
-				line.end = end;			
+				line.end = end;
+				line.size = ((start.x - end.x) ** 2 + (start.y - end.y)**2)**(0.5);
 			}
 			window.addEventListener('mousemove', fractal.updater);
 			fractal.trunk.push(line)
@@ -119,7 +117,7 @@ var fractal = {
 var objectRenderArray = [];
 
 var meta = { // stores relevant information about the current drawstyle.
-	maxDepth : 100,
+	maxDepth : 11,
 	style : "line",
 	thickness : 1
 }
@@ -137,6 +135,7 @@ function Vector(x,y){
 function Line(start, end,color="rgb(0,0,0)"){
 	this.start = start;
 	this.end = end;
+	this.size = ((start.x-end.x)**2 + (start.y-end.y)**2)**(0.5);
 	this.draw = function(){
 		ctx.strokeStyle=color;
 		ctx.beginPath();
@@ -256,6 +255,16 @@ function windowToCanvas(e){
 		x: e.clientX - width/2,
 		y: -e.clientY + (height/2 + 36)
 	}
+}
+
+function filter(arr, fn){
+	var result = [];
+	for(var i = 0; i < arr.length; i++){
+		if(fn(arr[i])){
+			result.push(arr[i]);
+		}
+	}
+	return result;
 }
 
 function initializeMenu(){
