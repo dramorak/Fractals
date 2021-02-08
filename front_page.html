@@ -4,9 +4,9 @@
 		<meta charset="utf-8" >
 		<title>Fractals and Fun</title>
 		<link rel="stylesheet" href="front_page.css">
-		<script async src="front_page.js"></script>
+		<script  src="init.js"></script>
+		<script  async src="main.js"></script>
 	</head>
-
 	<body>
 		<header>
 			<table>
@@ -40,8 +40,52 @@
 		<!-- Main Body -->
 		<main>
 			<div id="menu">
-				<div id="branch" class="menuItem">Branch!</div>
-				<div id="shapes" class="menuItem">Stick!</div>
+				<div id="fractals" class="menuSection">
+					<p class="sectionTitle">Branches</p>
+					<div class=sectionContent>
+						<div id="branch" class="menuItem">
+							<img src="images/graphic.webp" alt="branch" class="menuImage">
+						</div>
+						<div class="after"></div>
+					</div>
+				</div>
+				<div id="tools" class="menuSection">
+					<p class="sectionTitle">Tools</p>
+					<div class="sectionContent">
+						<div class="menuItem"></div>
+						<div class="after"></div>
+					</div>
+				</div>
+				<div id="shapes" class="menuSection">
+					<p class="sectionTitle">Shapes</p>
+					<div class="sectionContent">
+						<div id="line" class="menuItem">
+							<img src="images/line.png" alt="line" class="menuImage">
+						</div>
+						<div id="circle" class="menuItem">
+							<img src="images/circle.png" alt="line" class="menuImage">
+						</div>
+						<div id="triangle" class="menuItem">
+							<img src="images/triangle.png" alt="line" class="menuImage">
+						</div>
+						<div id="rectangle" class="menuItem">
+							<img src="images/rectangle.png" alt="line" class="menuImage">
+						</div>
+						<div id="hexagon" class="menuItem">
+							<img src="images/hexagon.png" alt="line" class="menuImage">
+						</div>
+						<div id="octagon" class="menuItem">
+							<img src="images/octagon.png" alt="line" class="menuImage">
+						</div>
+						<div id="fourstar" class="menuItem">
+							<img src="images/fourstar.png" alt="line" class="menuImage">
+						</div>
+						<div id="fivestar" class="menuItem">
+							<img src="images/fivestar.png" alt="line" class="menuImage">
+						</div>
+						<div class="after"></div>
+					</div>
+				</div>
 			</div>
 			<canvas>
 				<!-- content when browser does not support canvas  -->
@@ -55,8 +99,5 @@
 			<div id="javascript" class="langs"><a href="https://www.w3schools.com/js/DEFAULT.asp">JavaScript</a></div>
 			<div id="html/css" class="langs"><a href="https://www.w3schools.com/html/">HTML/CSS</a></div>
 		</footer>
-
-
 	</body>
-
 </html> 
