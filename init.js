@@ -17,6 +17,11 @@ var meta = { // stores relevant information about the current drawstyle.
 	thickness : 1
 }
 
+var actions = { // holds a history of the objects added to fractal.
+	undoList : [],
+	unundoList : []
+}
+
 var fractal = {
 	trunk: [],
 	children: [],
@@ -48,9 +53,13 @@ var fractal = {
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
 			fractal.children.push(new meta.style(start,end));
+			actions.undoList.push(() => fractal.children.pop());
 		} else {
 			fractal.trunk.push(new meta.style(start,end));
+			actions.undoList.push(() => fractal.trunk.pop());
 		}
+		
+		actions.unundoList = [];
 	},
 	pushGhostObject : function(start){
 		//Adds an object who's end point is determined dynamically by mouse position.
@@ -64,7 +73,7 @@ var fractal = {
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 
-				branch.transformation = Transformation.generateTransformation(start, end);
+				branch.transformation = Transformation.generateTransformation(start, end, unit);
 				displayLine.end = end;
 			}
 			window.addEventListener('mousemove', fractal.updater);
@@ -137,16 +146,21 @@ function Circle(start, end, color="rgb(0,0,0)"){
 }
 
 function Triangle(start, end, color="rgb(0,0,0)"){
+	shape = [new Point(0,0.5), new Point(0,-0.5), new Point(1,0)];
+
 	this.start = start;
 	this.end = end;
 	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
+
 	this.draw = function(){
+		let v = {x: this.end.x - this.start.x, y:this.end.y - this.start.y};
+		let trans = Transformation.generateTransformation(this.start, this.end);
+		shape.forEach((el, idx) => shape[idx] = trans.apply(el));
+
 		ctx.strokeStyle = color;
 		ctx.beginPath();
-		ctx.moveTo(this.start.x, this.start.y);
-		ctx.lineTo(this.end.x, this.start.y);
-		ctx.lineTo((this.end.x + this.start.x)/2, this.end.y);
-		ctx.lineTo(this.start.x, this.start.y);
+		ctx.moveTo(shape[shape.length - 1].x, shape[shape.length - 1].y);
+		shape.forEach((el) => ctx.lineTo(el.x, el.y));
 		ctx.stroke();
 	}
 } 
@@ -277,7 +291,7 @@ function SixPointStar(start, end, color="rgb(0,0,0)"){}
 function Branch(start, end){
 	this.start = start;
 	this.end = end;
-	this.transformation = Transformation.generateTransformation(this.start, this.end);
+	this.transformation = Transformation.generateTransformation(this.start, this.end, unit);
 }
 
 function Transformation(a,b,c,d,e,f){
@@ -326,7 +340,7 @@ Transformation.prototype.apply = function(operand){
 		return new operand.constructor(this.apply(operand.start), this.apply(operand.end));
 	}
 }
-Transformation.generateTransformation = function(start, end) {
+Transformation.generateTransformation = function(start, end, scale=1) {
 	var vec = {
 		x: (end.x - start.x), 
 		y: (end.y - start.y)
@@ -337,11 +351,13 @@ Transformation.generateTransformation = function(start, end) {
 	var theta_2 = Math.atan2(vec.y, vec.x);
 
 	var dt = theta_2 - theta_1;
+	let adj = cos(dt);
+	let opp = sin(dt);
 
-	var a = h*cos(dt)/unit; // scale * cos(angle) = (h/unit) * vec.y/h = (vec.y/unit)
-	var b = h*sin(dt)/unit; 
-	var c =	-h*sin(dt)/unit;
-	var d = h*cos(dt)/unit;
+	var a = h*adj/scale;
+	var b = h*opp/scale; 
+	var c =	-h*opp/scale;
+	var d = h*adj/scale;
 	var e = start.x;
 	var f = start.y;
 
@@ -406,18 +422,17 @@ function initializeMenu(){
 
 	//attatch handler to shapes menu.
 	menu.addEventListener('click', handler);
-
-
 }
 
 // Testing: 
 
 let p1 = new Point(0, 0);
 let p2 = new Point(100, 100);
+let p3 = new Point(0, 100);
 
 let line = new Line(p1,p2);
 let circle = new Circle(p1,p2);
-let triangle = new Triangle(p1,p2);
+let triangle = new Triangle(p1,p3);
 let rectangle = new Rectangle(p1,p2);
 let hexagon = new Hexagon(p1,p2);
 let octagon = new Octagon(p1,p2);

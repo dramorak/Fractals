@@ -10,7 +10,6 @@ Feature timeline:
 		- bypassing coordinate transformation
 		- Transformation.generateTransformation update
 		- reducing complex shapes to lines in limiting cases
-	- undo
 	-free form drawing
 	-scrolling
 	-multiple fractals / supra-fractal objects
@@ -24,7 +23,7 @@ Feature timeline:
 		text
 		erasure
 		share buttons
-
+		Support for pixel perfect fractals? Maybe an advanced menu that lets the user create images using numeric values instead of an inexact GUI
 	bugfixes: 
 		-four point start needs redoing.
 		- is the branching system working properly for other shapes? 
@@ -53,7 +52,7 @@ window.addEventListener('resize', function(){
 	ctx.setTransform(1, 0, 0, -1, width/2, height/2);
 });
 
-// drawing handler
+// Click handlers.
 function mouseup(mdEvent){
 	function helper(muEvent){
 		canvas.addEventListener('mousedown', mousedown);
@@ -80,11 +79,52 @@ function mousedown(e){
 }
 canvas.addEventListener('mousedown', mousedown);
 
+// keyboard handlers
+function keydownHandler(e){
+	let actionObject = {
+		ctrl:{
+			z: function(){ //Undo action
+				if (actions.undoList.length !== 0){
+					let fractalPopObject = actions.undoList.pop();
+					
+					let lastObj = fractalPopObject();
+					actions.unundoList.push(lastObj);
+				}
+			},
+			y: function(){ //un-undo action.
+				if(actions.unundoList.length !== 0){
+					let recoveredObj = actions.unundoList.pop();
+					if (recoveredObj instanceof Branch){
+						fractal.children.push(recoveredObj);
+						actions.undoList.push(() => fractal.children.pop());
+					} else {
+						fractal.trunk.push(recoveredObj);
+						actions.undoList.push(() => fractal.trunk.pop());
+					}
+				}
+			}
+		},
+		noctrl:{}
+	}
+
+	if (e.ctrlKey){
+		if (actionObject.ctrl[e.key] !== undefined){
+			actionObject.ctrl[e.key]();
+		}
+	} else {
+		if (actionObject.noctrl[e.key] !== undefined){
+			actionObject.noctrl[e.key]();
+		}
+	}
+}
+window.addEventListener('keydown', keydownHandler);
 
 initializeMenu();
 //Object renderer
 objectRenderArray.push(fractal);
 objectRenderArray.push(new Circle(new Point(-4,-4), new Point(4,4), 'rgb(255,127,39)'))
+
+
 
 function render(){
 	//clear

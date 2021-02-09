@@ -111,6 +111,10 @@ main {
 
 }
 
+canvas:hover {
+	cursor: crosshair;
+}
+
 footer {
 	position: absolute;
 	background-color: rgb(230,231,232);
