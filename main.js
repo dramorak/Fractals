@@ -5,9 +5,8 @@
 Feature timeline:
 	-performance improvement (for increased depth)
 		- calculating object size more efficiently.
-		- recasting transformation matrices using SVG matrix objects (faster multiplication times?)
 		- pre-calculating depth based on operation limit, children, trunk size, then limiting depth/children. 
-		- going to 30 fps
+		- limiting trans size to 0.99;
 		- somehow working in web workers (multithreading)
 		- bypassing coordinate transformation
 		- Transformation.generateTransformation update
@@ -56,14 +55,13 @@ Feature timeline:
 		-
    */ 
 
-
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
 
 if(!ctx){throw '';}
 
 var width = canvas.width = window.innerWidth;
-var height = canvas.height = window.innerHeight - 72;
+var height = canvas.height = window.innerHeight - 36;
 
 ctx.fillStyle = 'rgb(0,0,0)';
 ctx.setTransform(1, 0, 0, -1, Math.floor(width/2) + 0.5, Math.floor(height/2) + 0.5);
@@ -147,7 +145,7 @@ canvas.addEventListener('mousemove', mousemoveHandler);
 
 // Coordinate transformation from window to canvas.
 function windowToCanvas(e){
-	return new Point(inv*(e.clientX - canvasCenter.x), -inv*(e.clientY - 36 - canvasCenter.y));
+	return new Point(inv*(e.clientX - canvasCenter.x), -inv*(e.clientY - canvasCenter.y));
 }
 // clear canvas function
 function clear(){ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(inv*(-canvasCenter.x), inv*(canvasCenter.y - height), inv*width, inv*height);}
@@ -192,8 +190,6 @@ function keydownHandler(e){
 }
 window.addEventListener('keydown', keydownHandler);
 
-initializeMenu();
-
 
 //Object renderer
 objectRenderArray.push(fractal);
@@ -209,4 +205,11 @@ function render(){
 	//loop
 	window.requestAnimationFrame(render);
 }
-render();
+// Final initialization.
+initializeMenu();
+
+if (startRender){ 
+	render(); 
+}else {
+	console.log(fractalDrawBenchmark());
+}

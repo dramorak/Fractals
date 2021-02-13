@@ -16,18 +16,9 @@ html, body {
 	overflow: hidden;
 }
 
-header {
-	position: absolute;
-	font-size: small;
-	width: 100%;
-	height: 36px;
-	top: 0; 
-	background-color: rgb(230,231,232);
-}
-
 main {
 	position: absolute;
-	top: 36px;
+	top: 0px;
 	bottom: 36px;
 	width: 100%;
 
@@ -121,22 +112,6 @@ footer {
 	width: 100%;
 	height: 36px;
 	bottom: 0;
-}
-
-header table{
-	width: 100%;
-	height: 36px;
-}
-
-header .left{
-	width: 13%;
-
-}
-header .center{
-	width: 77%;
-}
-header .right{
-	width: 10%;
 }
 
 .pictures {
