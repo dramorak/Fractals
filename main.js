@@ -1,3 +1,5 @@
+// new main.js
+
 /* dev notes 
 - Might be a good idea to start using git for practice. 
 Feature timeline:
@@ -10,14 +12,14 @@ Feature timeline:
 		- bypassing coordinate transformation
 		- Transformation.generateTransformation update
 		- reducing complex shapes to lines in limiting cases
-	-free form drawing
-	-scrolling
-	-multiple fractals / supra-fractal objects
-	-dedicated local storage, to save images
 	-improved UI
 	-reformatted HTML page
 
 	ideas:
+		- gridlines
+		-gallery of drawings.
+		-multiple fractals / supra-fractal objects
+		-free form drawing
 		images (png, jpeg, etc)
 		copy clipboard
 		text
@@ -25,10 +27,34 @@ Feature timeline:
 		share buttons
 		Support for pixel perfect fractals? Maybe an advanced menu that lets the user create images using numeric values instead of an inexact GUI
 	bugfixes: 
-		-four point start needs redoing.
-		- is the branching system working properly for other shapes? 
+		circles not branching properly
+		wheel scaling changes scale measurement (problem with calculating 1/scale?);
+		ghost objects stick around if they're released off canvas
 	-*/
 
+
+/* 
+	- improve performance.
+	- Reformat the HTML page, include all features up till now.
+
+
+	- Work on blog, finish post on Y-combinator and include post about this website, including a post about this website.
+	- Research about search engine optimization to increase traffic to this website.
+	- Research ways to advertise website (reddit? Facebook?)
+	- Research ways to monetize.
+	- Make website public
+
+
+	UI todo list:
+		- undo button, un-undo button
+		- grab button
+		- colors
+		- better shapes
+		- improved 'branch' section layout/content
+		- redo header bar
+		- change content of footer bar.
+		-
+   */ 
 
 
 const canvas = document.querySelector('canvas');
@@ -42,42 +68,89 @@ var height = canvas.height = window.innerHeight - 72;
 ctx.fillStyle = 'rgb(0,0,0)';
 ctx.setTransform(1, 0, 0, -1, Math.floor(width/2) + 0.5, Math.floor(height/2) + 0.5);
 
-// clear canvas function
-function clear(){ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(-width/2, -height/2, width, height);}
-
 // updates dimensions of canvas on window resize.
 window.addEventListener('resize', function(){
 	width = canvas.width = window.innerWidth;
 	height = canvas.height = window.innerHeight - 36;
+	canvasCenter.x = width/2;
+	canvasCenter.y = height/2;
 	ctx.setTransform(1, 0, 0, -1, width/2, height/2);
 });
 
-// Click handlers.
-function mouseup(mdEvent){
-	function helper(muEvent){
-		canvas.addEventListener('mousedown', mousedown);
-		canvas.removeEventListener('mouseup', helper);
+// Mouse handling.
+let canvasCenter = new Point(Math.floor(width/2), Math.floor(height/2));
+let scale = 1;
+let inv = 1/scale;
+let x = 0;
+let y = 0;
+let mousedown = false;
 
-		var start = windowToCanvas(mdEvent);
-		var end   = windowToCanvas(muEvent);
+function mousemoveHandler(e){
+	if (mousedown === false){ return;}
+	if(meta.style === 'Grab'){
+		let dx = e.clientX - x;
+		let dy = e.clientY - y;
 
+		x = e.clientX;
+		y = e.clientY;
+
+		canvasCenter.x += Math.floor(dx);
+		canvasCenter.y += Math.floor(dy);
+
+		ctx.setTransform(1, 0, 0, -1, canvasCenter.x, canvasCenter.y);
+	}
+}
+function mouseupHandler(e){
+	if (mousedown === false){
+		return;
+	}
+
+	if (meta.style === "Grab"){
+	}else{
 		fractal.pop();
-		fractal.pushNewObject(start, end);
+		fractal.pushNewObject(new Point(x,y), windowToCanvas(e));
 	}
-	return helper;
+
+	x = 0;
+	y = 0;
+	mousedown = false;
+}
+function mousedownHandler(e){
+	if (meta.style === 'Grab'){
+		x = e.clientX;
+		y = e.clientY;
+	} else {
+		let start = windowToCanvas(e);
+		x = start.x;
+		y = start.y;
+		fractal.pushGhostObject(start);
+	}
+	mousedown = true;
 }
 
-function mousedown(e){
-	if (e.button === 0){ // left mouse button
-	var start = windowToCanvas(e);
+function wheelHandler(e){
+	e.preventDefault();
+	// moves in units of 125
+	// negative means the wheel has been scrolled up
+	// positive means the wheel has been scrolled down.
+	scale = Math.min(Math.max(scale-e.deltaY/125 * 0.25, 0.125), 5);
+	inv = 1/scale;
 
-	canvas.addEventListener('mouseup', mouseup(e));
-	canvas.removeEventListener('mousedown', mousedown);
-
-	fractal.pushGhostObject(start);
-	}
+	// update ctx transform attribute
+	ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y)
 }
-canvas.addEventListener('mousedown', mousedown);
+
+canvas.addEventListener('wheel', wheelHandler);
+canvas.addEventListener('mousedown', mousedownHandler);
+canvas.addEventListener('mouseup', mouseupHandler);
+canvas.addEventListener('mousemove', mousemoveHandler);
+
+// Coordinate transformation from window to canvas.
+function windowToCanvas(e){
+	return new Point(inv*(e.clientX - canvasCenter.x), -inv*(e.clientY - 36 - canvasCenter.y));
+}
+// clear canvas function
+function clear(){ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(inv*(-canvasCenter.x), inv*(canvasCenter.y - height), inv*width, inv*height);}
 
 // keyboard handlers
 function keydownHandler(e){
@@ -120,11 +193,11 @@ function keydownHandler(e){
 window.addEventListener('keydown', keydownHandler);
 
 initializeMenu();
+
+
 //Object renderer
 objectRenderArray.push(fractal);
-objectRenderArray.push(new Circle(new Point(-4,-4), new Point(4,4), 'rgb(255,127,39)'))
-
-
+objectRenderArray.push(new Circle(new Transformation(5,0,0,5,0,0), 'rgb(255,127,39)'))
 
 function render(){
 	//clear

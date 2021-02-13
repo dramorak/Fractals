@@ -9,12 +9,12 @@ var sin = Math.sin;
 var cos = Math.cos;
 
 var objectRenderArray = [];
-var changeStack = [];
 
 var meta = { // stores relevant information about the current drawstyle.
 	maxDepth : 100,
 	style : Line,
-	thickness : 1
+	thickness : 1,
+	color: black
 }
 
 var actions = { // holds a history of the objects added to fractal.
@@ -29,52 +29,57 @@ var fractal = {
 
 		function helper(d, objArray){
 			// filter objArray, discluding small objects
-			objArray = filter(objArray, (obj) => obj.size() > 2);
+			objArray = filter(objArray, (obj) => obj.size > 2);
 
 			if( d === meta.maxDepth || objArray.length === 0){
 				return;
 			}
 
-			let temp = [];
 			// draw the elements of obj array, fill temp
 			for(var i = 0; i < objArray.length; i++){
 				objArray[i].draw();
 			}
+
 			// iterate over transformation array
 			for (var j = 0; j<fractal.children.length; j++){
 			//	for each, apply the transformation to a copy of objArray and recursively call helper.
 				let trans = fractal.children[j].transformation;
-				objArray.forEach((obj, idx) => temp[idx] = trans.apply(objArray[idx]));
-				helper(d + 1, temp);
+				helper(d + 1, map(objArray, (el) => trans.apply(el)));
 			}
 		}
 		helper(0, fractal.trunk);
 	},
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
-			fractal.children.push(new meta.style(start,end));
+			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, unit, meta.color)));
 			actions.undoList.push(() => fractal.children.pop());
 		} else {
-			fractal.trunk.push(new meta.style(start,end));
+			let trans = Transformation.generateTransformation3(start, end);
+			fractal.trunk.push(new meta.style(trans, meta.color, meta.thickness));
 			actions.undoList.push(() => fractal.trunk.pop());
 		}
-		
+
 		actions.unundoList = [];
 	},
 	pushGhostObject : function(start){
 		//Adds an object who's end point is determined dynamically by mouse position.
+		// 'start' is assumed to be a point object.
 
 		if (meta.style === Branch){
 			// adds three objects: A line, displaying the orientation, a circle, displaying the magnitude, and a child node.
-			var displayCircle = new Circle(new Point(start.x - unit, start.y-unit), new Point(start.x+unit, start.y+unit), 'rgb(255,127,39)');
-			var displayLine = new Line(start, start, 'rgb(255,127,39)');
-			var branch = new Branch(start, start);
+
+			var displayCircle = new Circle(new Transformation(unit, 0, 0, unit, start.x, start.y), new Color(255,127,39));
+			var displayLine = new Line(zero, new Color(255,127,39));
+			var branch = new Branch(zero);
 
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 
-				branch.transformation = Transformation.generateTransformation(start, end, unit);
-				displayLine.end = end;
+				var transRel = Transformation.generateTransformation1(start, end, unit, meta.color);
+				var transAbs = Transformation.generateTransformation3(start, end);
+
+ 				branch.transformation = transRel;
+				displayLine.points = map(displayLine.template, (el) => transAbs.apply(el));
 			}
 			window.addEventListener('mousemove', fractal.updater);
 
@@ -83,10 +88,12 @@ var fractal = {
 			objectRenderArray.push(displayCircle);
 
 		} else {
-			var obj = new meta.style(start, new Point(start.x, start.y));
+			var obj = new meta.style(Transformation.generateTransformation3(start, new Point(start.x, start.y)), meta.color, meta.thickness);
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
-				obj.end = end;
+				var trans = Transformation.generateTransformation3(start, end);
+				obj.points = map(obj.template, (el) => trans.apply(el));
+				obj.size = trans.size;
 			}
 			window.addEventListener('mousemove', fractal.updater);
 			fractal.trunk.push(obj);
@@ -109,192 +116,115 @@ var fractal = {
 /* 
 Class definitions
 */
+function Color(r,g,b){
+	this.r = r;
+	this.b = b;
+	this.g = g;
+}
+Color.prototype.toString = function(){
+	return `rgb(${this.r},${this.g},${this.b})`;
+}
+
+var black = new Color(0,0,0);
+
+function Branch(transformation){
+	this.transformation = transformation;
+}
 
 function Point(x,y){
 	this.x = x;
 	this.y = y;
-	this.size = () => (this.x ** 2 + this.y ** 2) **(0.5);
+	this.size = (this.x ** 2 + this.y ** 2) ** (0.5);
 }
 
-function Line(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
+function Shape(points = [], size=undefined, color = black, thickness = 1){
+	this.points = points;
+	this.color = color;
+	this.thickness = thickness;
+	if(size === undefined){
+		this.size = radius(points);
+	} else {
+		this.size = size;
+	}
+
 	this.draw = function(){
-		ctx.strokeStyle=color;
+		let last = this.points.length - 1;
+		ctx.lineWidth = this.thickness;
+		ctx.strokeStyle = this.color.toString();
 		ctx.beginPath();
-		ctx.moveTo(this.start.x,this.start.y);
-		ctx.lineTo(this.end.x,this.end.y);
+		ctx.moveTo(this.points[last].x, this.points[last].y);
+		this.points.forEach((el) => ctx.lineTo(el.x, el.y));
 		ctx.stroke();
 	}
 }
+function Line(transformation, color=black, thickness = 1){
+	this.template = [new Point(0,0), new Point(0,1)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
 
-function Curve(start, end, color="rgb(0,0,0)"){}
-function Oval(start, end, color="rgb(0,0,0)"){}
-function Circle(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end   = end;
-	this.size = () => 0.5 * Math.min(Math.abs(this.end.x - this.start.x), Math.abs(this.end.y - this.start.y)) ;
-
-	this.draw = function(){
-		let center = new Point((this.start.x + this.end.x)/2,(this.start.y + this.end.y)/2);
-		ctx.strokeStyle=color;
+	this.draw = function(){ // unique draw function for performance reasons.
+		ctx.strokeStyle = this.color.toString();
+		ctx.lineWidth = this.thickness;
 		ctx.beginPath();
-		ctx.arc(center.x, center.y, this.size(), 0, 2* Math.PI);
+		ctx.moveTo(this.points[0].x, this.points[0].y);
+		ctx.lineTo(this.points[1].x, this.points[1].y);
 		ctx.stroke();
 	}
 }
-
-function Triangle(start, end, color="rgb(0,0,0)"){
-	shape = [new Point(0,0.5), new Point(0,-0.5), new Point(1,0)];
-
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-
-	this.draw = function(){
-		let v = {x: this.end.x - this.start.x, y:this.end.y - this.start.y};
-		let trans = Transformation.generateTransformation(this.start, this.end);
-		shape.forEach((el, idx) => shape[idx] = trans.apply(el));
-
-		ctx.strokeStyle = color;
+function Triangle(transformation, color = black, thickness = 1){
+	this.template = [new Point(-0.5, 0), new Point(0.5, 0), new Point(0,1)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+}
+function Curve(transformation, color=black, thickness = 1){}
+function Oval(transformation, color=black, thickness = 1){}
+function Circle(transformation, color=black, thickness = 1){
+	this.template = [new Point(0,0)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	this.draw = function(){ //special draw function.
+		ctx.lineWidth = this.thickness;
+		ctx.strokeStyle=this.color.toString();
 		ctx.beginPath();
-		ctx.moveTo(shape[shape.length - 1].x, shape[shape.length - 1].y);
-		shape.forEach((el) => ctx.lineTo(el.x, el.y));
+		ctx.arc(this.points[0].x, this.points[0].y, this.size, 0, 2*Math.PI);
 		ctx.stroke();
 	}
+}
+function RightTriangle(transformation, color=black, thickness = 1){}
+function Rectangle(transformation, color=black, thickness = 1){
+	this.template = [new Point(-0.5,0), new Point(0.5,0), new Point(0.5,1), new Point(-0.5,1)]
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
 } 
-function RightTriangle(start, end, color="rgb(0,0,0)"){}
-function Rectangle(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-	this.draw = function () {
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.moveTo(this.start.x, this.start.y);
-		ctx.lineTo(this.end.x, this.start.y);
-		ctx.lineTo(this.end.x, this.end.y);
-		ctx.lineTo(this.start.x, this.end.y);
-		ctx.lineTo(this.start.x, this.start.y);
-		ctx.stroke();
-	}
-} 
-function Pentagon(start, end, color="rgb(0,0,0)"){}
-function Hexagon(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-	this.draw = function() {
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.moveTo((this.start.x + this.end.x)/2, this.start.y);
-		ctx.lineTo(this.end.x, this.start.y + 0.25*(this.end.y - this.start.y));
-		ctx.lineTo(this.end.x, this.start.y + 0.75*(this.end.y - this.start.y));
-		ctx.lineTo((this.start.x + this.end.x)/2, this.end.y);
-		ctx.lineTo(this.start.x, this.start.y + 0.75* (this.end.y - this.start.y));
-		ctx.lineTo(this.start.x, this.start.y + 0.25 * (this.end.y - this.start.y));
-		ctx.lineTo((this.start.x + this.end.x)/2, this.start.y);
-		ctx.stroke();
-	}
+function Pentagon(transformation, color=black, thickness = 1){}
+function Hexagon(transformation, color=black, thickness = 1){
+	// x = 0.2257
+	// 1-x = 0.7743
+	this.template = [new Point(0,0), new Point(0.5, 0.2257), new Point(0.5, 0.7743), new Point(0,1), new Point(-0.5,0.7743), new Point(-0.5,0.2257)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
 }
-
-function Septagon(start, end, color="rgb(0,0,0)"){}
-
-function Octagon(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-	this.draw = function() {
-		var c = 1/(2+2**(0.5));
-		var adx = c*(this.end.x - this.start.x);
-		var ady = c*(this.end.y - this.start.y);
-
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.moveTo(this.start.x + adx, this.start.y);
-		ctx.lineTo(this.end.x - adx, this.start.y);
-		ctx.lineTo(this.end.x, this.start.y + ady);
-		ctx.lineTo(this.end.x, this.end.y - ady);
-		ctx.lineTo(this.end.x - adx, this.end.y);
-		ctx.lineTo(this.start.x + adx, this.end.y);
-		ctx.lineTo(this.start.x, this.end.y - ady);
-		ctx.lineTo(this.start.x, this.start.y + ady);
-		ctx.lineTo(this.start.x + adx, this.start.y);
-		ctx.stroke();
-	}
+function Septagon(transformation, color=black, thickness = 1){}
+function Octagon(transformation, color=black, thickness = 1){
+	//x = 0.292893
+	// x-0.5 = -0.2071
+	// 0.5 -x = 0.2071
+	// 1-x = 0.7071
+	this.template = [new Point(-0.2071,0), new Point(0.2071,0), new Point(0.5, 0.292893), new Point(0.5, 0.7071), new Point(0.2071,1), new Point(-0.2071,1), new Point(-0.5, 0.7071), new Point(-0.5, 0.292893)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);	
 }
-
-function RoundedRectangle(start, end, color="rgb(0,0,0)"){} //*
-function Polygon(start, end, color="rgb(0,0,0)"){}
-function RightArrow(start, end, color="rgb(0,0,0)"){}
-function LeftArrow(start, end, color="rgb(0,0,0)"){}
-function UpArrow(start, end, color="rgb(0,0,0)"){}
-function DownArrow(start, end, color="rgb(0,0,0)"){}
-
-function FourStar(start, end, color="rgb(0,0,0)"){
-	this.start = start;
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-	this.draw = function() {
-		ctx.strokeStyle = color;
-		var mx = (this.start.x + this.end.x)/2;
-		var my = (this.start.y + this.end.y)/2;
-
-		var dx = mx / 4;
-		var dy = my / 4;
-
-		ctx.moveTo(mx, this.start.y);
-		ctx.lineTo(mx + dx, my - dy);
-		ctx.lineTo(this.end.x, my);
-		ctx.lineTo(mx + dx, my + dy);
-		ctx.lineTo(mx, this.end.y);
-		ctx.lineTo(mx-dx, my + dy);
-		ctx.lineTo(this.start.x, my);
-		ctx.lineTo(mx - dx, my - dy);
-		ctx.lineTo(mx, this.start.y);
-		ctx.stroke();
-	}
+function RoundedRectangle(transformation, color=black, thickness = 1){} //*
+function Polygon(transformation, color=black, thickness = 1){}
+function RightArrow(transformation, color=black, thickness = 1){}
+function LeftArrow(transformation, color=black, thickness = 1){}
+function UpArrow(transformation, color=black, thickness = 1){}
+function DownArrow(transformation, color=black, thickness = 1){}
+function FourStar(transformation, color=black, thickness = 1){
+	this.template = [new Point(0,0), new Point(0.125, 0.375), new Point(0.5, 0.5), new Point(0.125, 0.625), new Point(0,1), new Point(-0.125,0.625), new Point(-0.5,0.5), new Point(-0.125, 0.375)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);		
 }
-function FiveStar(start, end, color="rgb(0,0,0)"){
-	this.start = start; 
-	this.end = end;
-	this.size = () => Math.max(Math.abs(this.start.x - this.end.x), Math.abs(this.start.y - this.end.y));
-	this.draw = function(){
-		var dx = this.end.x - this.start.x;
-		var dy = this.end.y - this.start.y;
-
-		var x0 = this.start.x;
-		var y0 = this.start.y;
-		var x1 = this.end.x;
-		var y1 = this.end.y;
-
-		ctx.strokeStyle = color;
-		ctx.beginPath();
-		ctx.moveTo(x0 + 0.194*dx, y0);
-		ctx.lineTo(x0 + 0.502*dx, y0 + 0.218*dy);
-		ctx.lineTo(x0 + 0.812*dx, y0);
-		ctx.lineTo(x0 + 0.704*dx, y0 + 0.378*dy);
-		ctx.lineTo(this.end.x, y0 + 0.608*dy);
-		ctx.lineTo(x0 + 0.622*dx, y0 + 0.618*dy);
-		ctx.lineTo(x0 + 0.5*dx, this.end.y);
-		ctx.lineTo(x0 + 0.38*dx, y0 + 0.62*dy);
-		ctx.lineTo(x0, y0 + 0.604*dy);
-		ctx.lineTo(x0 + 0.302*dx, y0 + 0.378*dy);
-		ctx.lineTo(x0 + 0.194*dx, y0);
-		ctx.stroke();
-	}
+function FiveStar(transformation, color=black, thickness = 1){
+	this.template = [new Point(-0.306, 0), new Point(0.002, 0.218), new Point(0.312, 0), new Point(0.204, 0.378), new Point(0.5, 0.608), new Point(0.122, 0.618), new Point(0, 1), new Point(-0.12, 0.627), new Point(-0.5, 0.604), new Point(-0.198, 0.378)];
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);		
 }
+function SixPointStar(transformation, color=black, thickness = 1){}
 
-function SixPointStar(start, end, color="rgb(0,0,0)"){}
-
-function Branch(start, end){
-	this.start = start;
-	this.end = end;
-	this.transformation = Transformation.generateTransformation(this.start, this.end, unit);
-}
-
-function Transformation(a,b,c,d,e,f){
+function Transformation(a,b,c,d,e,f,color=black){
 	// matrix notation for a linear transformation
 	// if a vector is expressed as (x,y,1), the Transformation is equivalent to the matrix:
 	// ( a c e )
@@ -314,8 +244,20 @@ function Transformation(a,b,c,d,e,f){
 	this.d = d;
 	this.e = e;
 	this.f = f;
+
+	this.xscale = (a**2 + b**2)**(0.5);
+	this.yscale = (c**2 + d**2)**(0.5);
+
+	this.size = Math.max(this.xscale, this.yscale);
+
+	//color attributes
+	this.r = color.r;
+	this.g = color.g;
+	this.bl = color.b;
 }
 Transformation.prototype.apply = function(operand){
+	// Transformation application function. Accepts points, shapes, and other transformations.
+	// Input MUST be point, shape, or transformation.
 	if(operand instanceof Transformation){
 		var a0 = operand.a;
 		var b0 = operand.b;
@@ -331,23 +273,28 @@ Transformation.prototype.apply = function(operand){
 		var e = this.a * e0 + this.c * f0 + this.e;
 		var f = this.b * e0 + this.d * f0 + this.f;
 
-		return new Transformation(a,b,c,d,e,f);
+		return new Transformation(a,b,c,d,e,f, this.r, this.g, this.bl);
 	}else if(operand instanceof Point){
 		var x = operand.x;
 		var y = operand.y;
-		return new Point(this.a * x + this.c * y + this.e, this.d*y + this.b*x + this.f);
+		return new Point(Math.floor(this.a * x + this.c * y + this.e), Math.floor(this.d*y + this.b*x + this.f));
 	} else {
-		return new operand.constructor(this.apply(operand.start), this.apply(operand.end));
+		let r = Math.round(operand.color.r + (this.r - operand.color.r)/5);
+		let g = Math.round(operand.color.g + (this.g - operand.color.g)/5);
+		let b = Math.floor(operand.color.b + (this.bl - operand.color.b)/5);
+		return new Shape(map(operand.points, (el) => this.apply(el)), operand.size * this.size, new Color(r,g,b), operand.thickness);
 	}
 }
-Transformation.generateTransformation = function(start, end, scale=1) {
+
+Transformation.generateTransformation1 = function(start, end, scale=1, color=black) {
+	//relative rotation
 	var vec = {
 		x: (end.x - start.x), 
 		y: (end.y - start.y)
 	}; 
-	var h = ((start.x - end.x) ** 2 + (start.y - end.y) ** 2) ** (0.5); //hypotenuse
+	var h = ((vec.x) ** 2 + (vec.y) ** 2) ** (0.5); //hypotenuse
 
-	var theta_1 = Math.atan2(start.y, start.x);
+	var theta_1 = Math.atan2(start.y, start.x)
 	var theta_2 = Math.atan2(vec.y, vec.x);
 
 	var dt = theta_2 - theta_1;
@@ -361,15 +308,37 @@ Transformation.generateTransformation = function(start, end, scale=1) {
 	var e = start.x;
 	var f = start.y;
 
-	return new Transformation(a,b,c,d,e,f);
+	return new Transformation(a,b,c,d,e,f, color);
 	
 }
 
-// Coordinate transformation from window to canvas.
-function windowToCanvas(e){
-	return new Point(e.clientX - width/2, -e.clientY + (height/2 + 36))
+Transformation.generateTransformation2 = function(angle, size, dx, dy, color=black){
+	// simple method to generate a transformation.
+	let opp = sin(angle) * size;
+	let adj = cos(angle) * size;
+
+	return new Transformation(adj, opp, -opp, adj, dx, dy, color);
 }
 
+Transformation.generateTransformation3 = function(start, end, color=black){
+	//absolute rotation.
+	let dx = (end.x - start.x)/scale;
+	let dy = (end.y - start.y)/scale;
+
+	var a = dy;
+	var b = -dx;
+	var c = dx;
+	var d = dy;
+	var e = start.x;
+	var f = start.y;
+
+	return new Transformation(a,b,c,d,e,f, color);
+}
+
+let id = new Transformation(1,0,0,1,0,0); // identity transformation
+let zero = new Transformation(0,0,0,0,0,0);
+
+// Auxilliary helper functions.
 function filter(arr, fn){
 	var result = [];
 	for(var i = 0; i < arr.length; i++){
@@ -380,6 +349,27 @@ function filter(arr, fn){
 	return result;
 }
 
+function map(arr, fn){
+	var result = [];
+	for(var i = 0; i < arr.length; i++){
+		result.push(fn(arr[i]));
+	}
+	return result;
+}
+
+function radius(arr){
+	m = 0;
+	let distance = (p1, p2) => Math.max(Math.abs(p1.x - p2.x), Math.abs(p1.y - p2.y));
+
+	for(var i = 0; i < arr.length; i++){
+		for(var j = i; j < arr.length; j++){
+			m = Math.max(m, distance(arr[i], arr[j]));
+		}
+	}
+	return m;
+}
+
+// Container function for initializing interactive buttons in the web page.
 function initializeMenu(){
 	var shapesMap = {
 		"line":Line, 
@@ -426,17 +416,146 @@ function initializeMenu(){
 
 // Testing: 
 
-let p1 = new Point(0, 0);
-let p2 = new Point(100, 100);
-let p3 = new Point(0, 100);
+let trans1 = new Transformation(200,0,0,200,0,0);
+let trans2 = new Transformation(0,100,-100,0,0,0);
+let trans3 = new Transformation(100,0,0,100,10,10);
 
-let line = new Line(p1,p2);
-let circle = new Circle(p1,p2);
-let triangle = new Triangle(p1,p3);
-let rectangle = new Rectangle(p1,p2);
-let hexagon = new Hexagon(p1,p2);
-let octagon = new Octagon(p1,p2);
-let fourps = new FourStar(p1,p2);
-let fiveps = new FiveStar(p1,p2);
+let trans4 = new Transformation(100,100,100,100, 100, 100);
+let trans5 = new Transformation(1,12,20,10,10,100);
+let trans6 = new Transformation(-10, -10, 100, 20, -100,-100);
 
-let trans = Transformation.generateTransformation(p1,p2);
+let l1 = new Line(trans1, black, 1);
+let l2 = new Line(trans2);
+let l3 = new Line(trans3);
+
+let l4 = new Line(trans4);
+let l5 = new Line(trans5);
+let l6 = new Line(trans6);
+
+let color = new Color(255,0,0);
+let colorTrans = new Transformation(100,0,0,100,0,0,color);
+let ex = colorTrans.apply(l1);
+function deepEquals(actual, expected){
+
+	function helper(actual, expected){
+		if (typeof actual != typeof expected){
+			return false;
+		}
+
+		if(typeof actual === 'object'){
+			let t = true;
+			for(var x in actual){
+				t = t && helper(actual[x], expected[x]);
+			}
+			for(var x in expected){
+				t = t && helper(actual[x], expected[x]);
+			}
+
+			if(t === false){
+			}
+			return t;
+
+		} else if (typeof actual === 'number'){ // must use fuzzy equals for float case.
+			return Math.abs(actual - expected) < 0.00001;
+		} else {
+			return (actual === expected);
+		}
+	}
+
+	let t = helper(actual, expected);
+	return t;
+}
+
+function assertEquals(actual, expected, message){
+	if(deepEquals(actual,expected)){
+		console.log(`Test successful.`);
+		return;
+	}
+	console.log(`Test[${message}] failed.`)
+}
+
+function transformationUnitTest(){
+	let p1 = new Point(0,0);
+	let p2 = new Point(1,0);
+	let p3 = new Point(0,1);
+	let p4 = new Point(1,1);
+
+	console.log("Beginning transformation test:");
+	console.log("Beginning primitive transformation tests:");
+	// id test.
+	console.log('Testing transformation(id):');
+	let trans1 = id;
+	let msg1 = 'Trivial identity test.'
+	assertEquals(trans1.apply(p1),p1,msg1);
+	assertEquals(trans1.apply(p2),p2,msg1);
+	assertEquals(trans1.apply(p3),p3,msg1);
+	assertEquals(trans1.apply(p4),p4,msg1);
+	console.log('\n');
+
+	//scale test
+	console.log('Testing transformation(double):');
+	let trans2 = new Transformation(2,0,0,2,0,0);
+	let msg2 = "Doubling length.";
+	assertEquals(trans2.apply(p1),new Point(0,0),msg2);
+	assertEquals(trans2.apply(p2),new Point(2,0),msg2);
+	assertEquals(trans2.apply(p3),new Point(0,2),msg2);
+	assertEquals(trans2.apply(p4),new Point(2,2),msg2);
+	console.log('\n');
+
+	//rotate test
+	console.log('Testing transformation(rot-pi/2):');
+	let trans3 = new Transformation(0,1,-1,0,0,0);
+	let msg3 = "Rotate Pi/2 radians counter-clockwise.";
+	assertEquals(trans3.apply(p1),new Point(0,0),msg3);
+	assertEquals(trans3.apply(p2),new Point(0,1),msg3);
+	assertEquals(trans3.apply(p3),new Point(-1,0),msg3);
+	assertEquals(trans3.apply(p4),new Point(-1,1),msg3);
+	console.log('\n');
+
+	//Translate test.
+	console.log('Testing transformation(trans-1,1):');
+	let trans4 = new Transformation(1,0,0,1,1,1);
+	let msg4 = "Translate 1 up 1 right.";
+	assertEquals(trans4.apply(p1),new Point(1,1),msg4);
+	assertEquals(trans4.apply(p2),new Point(2,1),msg4);
+	assertEquals(trans4.apply(p3),new Point(1,2),msg4);
+	assertEquals(trans4.apply(p4),new Point(2,2),msg4);
+	console.log('\n');
+
+	console.log('\n\n');
+	//Transformation apply to transformation testing
+	console.log("Beginning test for transformation-transformation operations.");
+
+	assertEquals(zero.apply(new Transformation(1,1,1,1,1,1)), zero, "Zero matrix times anything is zero.");
+	assertEquals(id.apply(new Transformation(1,1,1,1,1,1)), new Transformation(1,1,1,1,1,1), "Identity times x is x.");
+	assertEquals((new Transformation(1,1,1,1,1,1)).apply(id), new Transformation(1,1,1,1,1,1), "x times identity is x.")
+	assertEquals(trans2.apply(trans4), new Transformation(2,0,0,2,2,2), "Trans, then double.");
+	assertEquals(trans4.apply(trans2), new Transformation(2,0,0,2,1,1), "Double, then trans.");
+	assertEquals(trans3.apply(trans2), new Transformation(0,2,-2,0,0,0), "Rotate, double.");
+
+	console.log('\n\n\n')
+	//Transformation generation testing.
+	console.log("Beginning test for transformation generation functions.");
+	console.log("Two-point generation, relative:");
+	assertEquals(Transformation.generateTransformation1(new Point(0,0), new Point(1,0)), new Transformation(1,0,0,1,0,0), "Identity.");
+	assertEquals(Transformation.generateTransformation1(new Point(0,0), new Point(-1,0)), new Transformation(-1,0,0,-1,0,0), "Rotate (pi)");
+	assertEquals(Transformation.generateTransformation1(new Point(0,0), new Point(0,-1)), new Transformation(0,-1,1,0,0,0), "Rotate (3pi/2)");
+	assertEquals(Transformation.generateTransformation1(new Point(1,0), new Point(1,1)), new Transformation(0,1,-1,0,1,0), "Rotate(pi/2), trans:1,0");
+	assertEquals(Transformation.generateTransformation1(new Point(1,0), new Point(2,0)), new Transformation(1,0,0,1,1,0), 'trans:1,0');
+	assertEquals(Transformation.generateTransformation1(new Point(0,-1), new Point(0,0)), new Transformation(-1,0,0,-1,0,-1), 'Rot(pi), Trans:0,-1');
+	console.log("Size-angle-trans generation:");
+	assertEquals(Transformation.generateTransformation2(0, 1, 0, 0), id, "Identity.");
+	assertEquals(Transformation.generateTransformation2(0,2,0,0), new Transformation(2,0,0,2,0,0), "Double.");
+	assertEquals(Transformation.generateTransformation2(Math.PI/2, 1, 0,0), new Transformation(0, 1, -1, 0,0,0), "Rotate(pi/2)");
+	assertEquals(Transformation.generateTransformation2(0,1,1,1), new Transformation(1,0,0,1,1,1), "Trans:1,1");
+	console.log("Two-point generation, absolute.");
+	assertEquals(Transformation.generateTransformation3(new Point(0,0), new Point(0,1)), new Transformation(1,0,0,1,0,0), "Identity.");
+	assertEquals(Transformation.generateTransformation3(new Point(0,0), new Point(-1,0)), new Transformation(0,1,-1,0,0,0), "Rotate (pi/2)");
+	assertEquals(Transformation.generateTransformation3(new Point(0,0), new Point(0,-1)), new Transformation(-1,0,0,-1,0,0), "Rotate (pi)");
+	assertEquals(Transformation.generateTransformation3(new Point(1,0), new Point(1,1)), new Transformation(1,0,0,1,1,0), "Trans: 1,0");
+	assertEquals(Transformation.generateTransformation3(new Point(1,0), new Point(2,0)), new Transformation(0,-1,1,0,1,0), 'Rot:-pi/2, trans:1,0');
+	assertEquals(Transformation.generateTransformation3(new Point(0,-1), new Point(0,0)), new Transformation(1,0,0,1,0,-1), 'Trans:0,-1');
+
+	//Color Transformation testing
+}
+
