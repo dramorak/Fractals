@@ -4,13 +4,8 @@
 - Might be a good idea to start using git for practice. 
 Feature timeline:
 	-performance improvement (for increased depth)
-		- calculating object size more efficiently.
-		- pre-calculating depth based on operation limit, children, trunk size, then limiting depth/children. 
-		- limiting trans size to 0.99;
-		- somehow working in web workers (multithreading)
-		- bypassing coordinate transformation
-		- Transformation.generateTransformation update
-		- reducing complex shapes to lines in limiting cases
+		- looking online for canvas optimizations.
+	- tweaking limiter ( maxSize needs to be fixed.);
 	-improved UI
 	-reformatted HTML page
 
@@ -27,7 +22,8 @@ Feature timeline:
 		Support for pixel perfect fractals? Maybe an advanced menu that lets the user create images using numeric values instead of an inexact GUI
 	bugfixes: 
 		circles not branching properly
-		wheel scaling changes scale measurement (problem with calculating 1/scale?);
+		scaling is bugged, goes to wrong location
+		double clicking fucks up draws?
 		ghost objects stick around if they're released off canvas
 	-*/
 
@@ -64,8 +60,7 @@ var width = canvas.width = window.innerWidth;
 var height = canvas.height = window.innerHeight - 36;
 
 ctx.fillStyle = 'rgb(0,0,0)';
-ctx.setTransform(1, 0, 0, -1, Math.floor(width/2) + 0.5, Math.floor(height/2) + 0.5);
-
+ctx.setTransform(1,0,0,-1,Math.floor(width/2), Math.floor(height/2));
 // updates dimensions of canvas on window resize.
 window.addEventListener('resize', function(){
 	width = canvas.width = window.innerWidth;
@@ -92,10 +87,10 @@ function mousemoveHandler(e){
 		x = e.clientX;
 		y = e.clientY;
 
-		canvasCenter.x += Math.floor(dx);
-		canvasCenter.y += Math.floor(dy);
+		canvasCenter.x += dx;
+		canvasCenter.y += dy;
 
-		ctx.setTransform(1, 0, 0, -1, canvasCenter.x, canvasCenter.y);
+		ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y);
 	}
 }
 function mouseupHandler(e){
@@ -128,6 +123,7 @@ function mousedownHandler(e){
 
 function wheelHandler(e){
 	e.preventDefault();
+
 	// moves in units of 125
 	// negative means the wheel has been scrolled up
 	// positive means the wheel has been scrolled down.
@@ -161,6 +157,7 @@ function keydownHandler(e){
 					let lastObj = fractalPopObject();
 					actions.unundoList.push(lastObj);
 				}
+				setDrawLimits();
 			},
 			y: function(){ //un-undo action.
 				if(actions.unundoList.length !== 0){
@@ -173,6 +170,7 @@ function keydownHandler(e){
 						actions.undoList.push(() => fractal.trunk.pop());
 					}
 				}
+				setDrawLimits();
 			}
 		},
 		noctrl:{}
@@ -195,7 +193,7 @@ window.addEventListener('keydown', keydownHandler);
 objectRenderArray.push(fractal);
 objectRenderArray.push(new Circle(new Transformation(5,0,0,5,0,0), 'rgb(255,127,39)'))
 
-function render(){
+function render(timestamp){
 	//clear
 	clear();
 
@@ -205,11 +203,12 @@ function render(){
 	//loop
 	window.requestAnimationFrame(render);
 }
+
 // Final initialization.
 initializeMenu();
 
 if (startRender){ 
 	render(); 
 }else {
-	console.log(fractalDrawBenchmark());
+	console.log(`Total time: ${fractalDrawBenchmark()}`);
 }

@@ -1,5 +1,6 @@
 // Testing, benchmarks.
-//startRender = false;
+/*
+startRender = false;
 
 let trans1 = new Transformation(200,0,0,200,0,0);
 let trans2 = new Transformation(0,100,-100,0,0,0);
@@ -146,7 +147,7 @@ function transformationUnitTest(){
 
 function fractalDrawBenchmark(){
 	let l1 = new Line(new Transformation(100,0,0,100,0,0));
-	let b1 = new Branch(Transformation.generateTransformation2(Math.PI/6, 0.82, 0,100));
+	let b1 = new Branch(Transformation.generateTransformation2(Math.PI/6, 0.82, 0, 100));
 	let b2 = new Branch(Transformation.generateTransformation2(-Math.PI/6, 0.82, 0, 100));
 
 	fractal.trunk.push(l1);
@@ -161,5 +162,14 @@ function fractalDrawBenchmark(){
 
 	//test results:
 	//v1 = 1350 ms
-	//v2 = 
+	//v2 = 803 ms  (YES!)
+	//v3 = 780 - save 2% time but removes the ability to scroll/grab, so scrapped.
+	//v4 = 780 ms - stop calculating point size, not needed.
+	//v5 = 760 ms - slight change to map function.
 }
+
+// What is the proprtion of time spent drawing, vs calculating vectors?
+var timeDrawing = 0;
+var timeCalculating = 0;
+
+*/

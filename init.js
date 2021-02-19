@@ -4,7 +4,6 @@
 
 
 var unit = 100; // 1 unit is defined as 100 pixels.
-var operationLimit = 100000; //rough estimate on the number of operations that can be done in under 16 milliseconds.
 
 var sin = Math.sin;
 var cos = Math.cos;
@@ -13,10 +12,15 @@ var startRender = true;
 var objectRenderArray = [];
 
 var meta = { // stores relevant information about the current drawstyle.
-	maxDepth : 100,
 	style : Line,
 	thickness : 1,
-	color: black
+	color: black,
+
+	renderThreshold: 2,
+	maxDepth : 100,
+	maxScale : 0.9,
+	maxSize: 10000,
+	operationLimit: 50000
 }
 
 var actions = { // holds a history of the objects added to fractal.
@@ -27,11 +31,11 @@ var actions = { // holds a history of the objects added to fractal.
 var fractal = {
 	trunk: [],
 	children: [],
-	draw: function(){
+	build: function(){
 
 		function helper(d, objArray){
 			// filter objArray, discluding small objects
-			objArray = filter(objArray, (obj) => obj.size > 2);
+			objArray = filter(objArray, (obj) => obj.size > meta.renderThreshold);
 
 			if( d === meta.maxDepth || objArray.length === 0){
 				return;
@@ -39,17 +43,25 @@ var fractal = {
 
 			// draw the elements of obj array, fill temp
 			for(var i = 0; i < objArray.length; i++){
-				objArray[i].draw();
+				objArray[i].build();
 			}
 
 			// iterate over transformation array
 			for (var j = 0; j<fractal.children.length; j++){
 			//	for each, apply the transformation to a copy of objArray and recursively call helper.
 				let trans = fractal.children[j].transformation;
-				helper(d + 1, map(objArray, (el) => trans.apply(el)));
+				let newChildren = map(objArray, (el) => trans.apply(el));
+
+				helper(d + 1, newChildren);
 			}
 		}
+
 		helper(0, fractal.trunk);
+	},
+	draw: function(){
+		ctx.beginPath();
+		fractal.build();
+		ctx.stroke();
 	},
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
@@ -62,6 +74,8 @@ var fractal = {
 		}
 
 		actions.unundoList = [];
+
+		setDrawLimits();
 	},
 	pushGhostObject : function(start){
 		//Adds an object who's end point is determined dynamically by mouse position.
@@ -70,24 +84,24 @@ var fractal = {
 		if (meta.style === Branch){
 			// adds three objects: A line, displaying the orientation, a circle, displaying the magnitude, and a child node.
 
-			var displayCircle = new Circle(new Transformation(unit, 0, 0, unit, start.x, start.y), new Color(255,127,39));
-			var displayLine = new Line(zero, new Color(255,127,39));
+			//var displayCircle = new Circle(new Transformation(unit, 0, 0, unit, start.x, start.y), new Color(255,127,39));
+			//var displayLine = new Line(zero, new Color(255,127,39));
 			var branch = new Branch(zero);
 
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 
-				var transRel = Transformation.generateTransformation1(start, end, unit, meta.color);
-				var transAbs = Transformation.generateTransformation3(start, end);
+				var trans = Transformation.generateTransformation1(start, end, unit, meta.color);
+				//var transAbs = Transformation.generateTransformation3(start, end);
 
- 				branch.transformation = transRel;
-				displayLine.points = map(displayLine.template, (el) => transAbs.apply(el));
+ 				branch.transformation = trans;
+				//displayLine.points = map(displayLine.template, (el) => transAbs.apply(el));
 			}
 			window.addEventListener('mousemove', fractal.updater);
 
 			fractal.children.push(branch);
-			objectRenderArray.push(displayLine);
-			objectRenderArray.push(displayCircle);
+			//objectRenderArray.push(displayLine);
+			//objectRenderArray.push(displayCircle);
 
 		} else {
 			var obj = new meta.style(Transformation.generateTransformation3(start, new Point(start.x, start.y)), meta.color, meta.thickness);
@@ -105,8 +119,8 @@ var fractal = {
 		window.removeEventListener('mousemove', fractal.updater);
 		if (meta.style === Branch){
 			fractal.children.pop(); 
-			objectRenderArray.pop(); 
-			objectRenderArray.pop();
+			//objectRenderArray.pop(); 
+			//objectRenderArray.pop();
 		} else {
 			fractal.trunk.pop();
 		}
@@ -131,12 +145,12 @@ var black = new Color(0,0,0);
 
 function Branch(transformation){
 	this.transformation = transformation;
+
 }
 
 function Point(x,y){
 	this.x = x;
 	this.y = y;
-	this.size = (this.x ** 2 + this.y ** 2) ** (0.5);
 }
 
 function Shape(points = [], size=undefined, color = black, thickness = 1){
@@ -149,13 +163,17 @@ function Shape(points = [], size=undefined, color = black, thickness = 1){
 		this.size = size;
 	}
 
-	this.draw = function(){
+	this.build = function(){
 		let last = this.points.length - 1;
 		ctx.lineWidth = this.thickness;
 		ctx.strokeStyle = this.color.toString();
-		ctx.beginPath();
 		ctx.moveTo(this.points[last].x, this.points[last].y);
 		this.points.forEach((el) => ctx.lineTo(el.x, el.y));
+	}
+
+	this.draw = function(){
+		ctx.beginPath();
+		this.build();
 		ctx.stroke();
 	}
 }
@@ -163,13 +181,11 @@ function Line(transformation, color=black, thickness = 1){
 	this.template = [new Point(0,0), new Point(0,1)];
 	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
 
-	this.draw = function(){ // unique draw function for performance reasons.
+	this.build = function(){ // unique draw function for performance reasons.
 		ctx.strokeStyle = this.color.toString();
 		ctx.lineWidth = this.thickness;
-		ctx.beginPath();
 		ctx.moveTo(this.points[0].x, this.points[0].y);
 		ctx.lineTo(this.points[1].x, this.points[1].y);
-		ctx.stroke();
 	}
 }
 function Triangle(transformation, color = black, thickness = 1){
@@ -181,12 +197,10 @@ function Oval(transformation, color=black, thickness = 1){}
 function Circle(transformation, color=black, thickness = 1){
 	this.template = [new Point(0,0)];
 	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
-	this.draw = function(){ //special draw function.
+	this.build = function(){ //special draw function.
 		ctx.lineWidth = this.thickness;
 		ctx.strokeStyle=this.color.toString();
-		ctx.beginPath();
 		ctx.arc(this.points[0].x, this.points[0].y, this.size, 0, 2*Math.PI);
-		ctx.stroke();
 	}
 }
 function RightTriangle(transformation, color=black, thickness = 1){}
@@ -275,20 +289,29 @@ Transformation.prototype.apply = function(operand){
 		var e = this.a * e0 + this.c * f0 + this.e;
 		var f = this.b * e0 + this.d * f0 + this.f;
 
-		return new Transformation(a,b,c,d,e,f, this.r, this.g, this.bl);
+		var clr = new Color(this.r, this.b, this.g);
+
+		return new Transformation(a,b,c,d,e,f, clr);
 	}else if(operand instanceof Point){
-		var x = operand.x;
-		var y = operand.y;
-		return new Point(Math.floor(this.a * x + this.c * y + this.e), Math.floor(this.d*y + this.b*x + this.f));
+		let x = operand.x;
+		let y = operand.y;
+
+		return new Point(this.a * x + this.c * y + this.e, this.d * y + this.b * x + this.f);
 	} else {
-		let r = Math.round(operand.color.r + (this.r - operand.color.r)/5);
-		let g = Math.round(operand.color.g + (this.g - operand.color.g)/5);
-		let b = Math.floor(operand.color.b + (this.bl - operand.color.b)/5);
-		return new Shape(map(operand.points, (el) => this.apply(el)), operand.size * this.size, new Color(r,g,b), operand.thickness);
+
+		let r = operand.color.r + (this.r - operand.color.r)/15;
+		let g = operand.color.g + (this.g - operand.color.g)/15;
+		let b = operand.color.b + (this.bl - operand.color.b)/15;
+
+		let newPts = map(operand.points, (el) => this.apply(el));
+		let newSize = operand.size * this.size;
+		let newClr = new Color(r,g,b);
+
+		return new Shape(newPts, newSize, newClr, operand.thickness);
 	}
 }
 
-Transformation.generateTransformation1 = function(start, end, scale=1, color=black) {
+Transformation.generateTransformation1 = function(start, end, unit=1, color=black) {
 	//relative rotation
 	var vec = {
 		x: (end.x - start.x), 
@@ -303,10 +326,12 @@ Transformation.generateTransformation1 = function(start, end, scale=1, color=bla
 	let adj = cos(dt);
 	let opp = sin(dt);
 
-	var a = h*adj/scale;
-	var b = h*opp/scale; 
-	var c =	-h*opp/scale;
-	var d = h*adj/scale;
+	let scale = Math.min(h/unit, meta.maxScale);
+
+	var a = scale*adj;
+	var b = scale*opp; 
+	var c =	-scale*opp;
+	var d = scale*adj;
 	var e = start.x;
 	var f = start.y;
 
@@ -314,7 +339,7 @@ Transformation.generateTransformation1 = function(start, end, scale=1, color=bla
 	
 }
 
-Transformation.generateTransformation2 = function(angle, size, dx, dy, color=black){
+Transformation.generateTransformation2 = function(angle, size, dx, dy, unit = 1, color=black){
 	// simple method to generate a transformation.
 	let opp = sin(angle) * size;
 	let adj = cos(angle) * size;
@@ -322,15 +347,18 @@ Transformation.generateTransformation2 = function(angle, size, dx, dy, color=bla
 	return new Transformation(adj, opp, -opp, adj, dx, dy, color);
 }
 
-Transformation.generateTransformation3 = function(start, end, color=black){
+Transformation.generateTransformation3 = function(start, end, unit = 1, color=black){
 	//absolute rotation.
-	let dx = (end.x - start.x)/scale;
-	let dy = (end.y - start.y)/scale;
+	let dx = (end.x - start.x);
+	let dy = (end.y - start.y);
 
-	var a = dy;
-	var b = -dx;
-	var c = dx;
-	var d = dy;
+	let angle = Math.atan2(dy,dx) - Math.PI/2;
+	let h = Math.min((dx ** 2 + dy **2 ) ** (0.5), meta.maxSize);
+
+	var a = h * cos(angle);
+	var b = h * sin(angle);
+	var c = -h * sin(angle);
+	var d = h * cos(angle);
 	var e = start.x;
 	var f = start.y;
 
@@ -354,7 +382,7 @@ function filter(arr, fn){
 function map(arr, fn){
 	var result = [];
 	for(var i = 0; i < arr.length; i++){
-		result.push(fn(arr[i]));
+		result[i] = fn(arr[i]);
 	}
 	return result;
 }
@@ -369,6 +397,25 @@ function radius(arr){
 		}
 	}
 	return m;
+}
+
+function ceiling(n){
+  return -Math.floor(-n);
+}
+
+function cache(f){
+	var dict = {};
+	function helper(){
+    let s = JSON.stringify(arguments);
+		if (dict[s] === undefined){
+			let r = f.apply(null, arguments);
+			dict[s] = r;
+			return r;
+		} else {
+			return dict[s];
+		}
+	}
+	return helper;
 }
 
 // Container function for initializing interactive buttons in the web page.
@@ -416,3 +463,123 @@ function initializeMenu(){
 	menu.addEventListener('click', handler);
 }
 
+// limit detection.
+
+function knapsack(A, r){
+	var sum = 1;
+	if (r <= 0){
+		return 0;
+	}
+	for(var i = 0; i < A.length; i++){
+		sum += knapsack(A, r-A[i]);
+	}
+
+  return sum;
+}
+
+knapsack = cache(knapsack);
+
+function countNodes(radii, maxSize, renderThreshold){
+	// returns the number of nodes in a tree comprised of branches of radius radii, of max root size maxSize, and of render size limit renderThreshold.
+	// assumptions:
+	//	 0 < radii[i] <= 0.9 all i
+	//   renderThreshold > 0;
+	if (radii.length === 0){
+		if (maxSize === 0){
+			return 0;
+		} else {
+			return 1;
+		}
+	}
+
+	// can improve.
+	let ratio = renderThreshold / maxSize;
+	let depths = [];
+	let maxDepth = 0;
+	for(var i = 0; i < radii.length; i++){
+		let d = Math.min(100, Math.round(Math.log(ratio)/Math.log(radii[i])));
+		depths.push(d);
+    maxDepth = Math.max(maxDepth, d);
+	}
+
+  for(var i = 0; i < radii.length; i++){
+    depths[i] = Math.floor(maxDepth / depths[i]);
+  }
+
+	let nodes = knapsack(depths, maxDepth);
+
+	return nodes;
+}
+
+function findMaxScale(radii, maxSize, renderThreshold, operationLimit){
+	// Finds the maximum scale of a new branch such that it lays below the operation limit.
+
+	let l = 0;
+	let r = 0.9;
+	let count = 0;
+	let length = radii.length;
+  let m = 0;
+	while(count < 8){
+		m = (l + r) / 2
+		radii[length] = m;
+
+		let n = countNodes(radii, maxSize, renderThreshold);
+
+		if( n > operationLimit){
+			r = m;
+		} else if (n === operationLimit){
+			return m;
+		} else if (n < operationLimit){
+			l = m;
+		}
+
+		count += 1 ;
+	}
+
+	return m;
+}
+
+
+function findMaxSize(radii, maxSize, renderThreshold, operationLimit){
+	// Finds the maximum scale of a new branch such that it lays below the operation limit.
+
+	let l = 0;
+	let r = 10000;
+	let count = 0;
+  let m = 0;
+	while(count < 8){
+		m = (l + r) / 2
+
+		let n = countNodes(radii, r, renderThreshold);
+
+		if( n > operationLimit){
+			r = m;
+		} else if (n === operationLimit){
+			return m;
+		} else if (n < operationLimit){
+			l = m;
+		}
+
+		count += 1 ;
+	}
+
+	return m;
+}
+
+function setDrawLimits(){
+	let radii = [];
+	for(var i = 0; i < fractal.children.length; i++){
+		radii.push(fractal.children[i].transformation.size);
+	}
+
+	let s = 0;
+	for(var i = 0; i < fractal.trunk.length; i++){
+		s = Math.max(s, fractal.trunk[i].size);
+	}
+
+	let scale = findMaxScale(radii, s, meta.renderThreshold, meta.operationLimit);
+	let size = findMaxSize(radii, s, meta.renderThreshold, meta.operationLimit);
+
+	meta.maxScale = scale;
+	meta.maxSize = size;
+}
