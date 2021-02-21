@@ -4,6 +4,7 @@
 		<meta charset="utf-8" >
 		<title>Fractals and Fun</title>
 		<link rel="stylesheet" href="front_page.css">
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 		<script  src="init.js"></script>
 		<script src="testing.js"></script>
 		<script  async src="main.js"></script>
@@ -24,7 +25,15 @@
 				<div id="tools" class="menuSection">
 					<p class="sectionTitle">Tools</p>
 					<div class="sectionContent">
-						<div class="menuItem"></div>
+						<div id='grab' class="menuItem">
+							<img src="images/handGrab.png" alt='grab' class='menuImage'>
+						</div>
+						<div id='undo' class="menuItem">
+							<img src="images/undo.png" alt="undo" class="menuImage">
+						</div>
+						<div id='redo' class="menuItem">
+							<img src="images/redo.png" alt="redo" class="menuImage">
+						</div>
 						<div class="after"></div>
 					</div>
 				</div>
@@ -60,6 +69,39 @@
 				</div>
 				<div id='colors' class='menuSection'>
 					<p class='sectionTitle'>Colors</p>
+					<div id='drawColorContainer' class='selected'>
+						<div id='drawColor' class='colorBox'><div class="colorBoxInterior" style='background-color: black'></div></div>
+						<div class="label"> draw color</div>
+						<div class='after'></div>
+					</div>
+					<div id='backgroundColorContainer'>
+					<div id='backgroundColor' class='colorBox'><div class="colorBoxInterior" style='background-color: white'></div></div>
+					<div class="label"> background color</div>
+					<div class='after'></div>
+					</div>
+					<div id='black' class='colorBox'><div class="colorBoxInterior" style='background-color: black'></div></div>
+					<div id='grey' class='colorBox'><div class="colorBoxInterior" style='background-color: grey'></div></div>
+					<div id='darkred' class='colorBox'><div class="colorBoxInterior" style='background-color: darkred'></div></div>
+					<div id='red' class='colorBox'><div class="colorBoxInterior" style='background-color: red'></div></div>
+					<div id='orange' class='colorBox'><div class="colorBoxInterior" style='background-color: orange'></div></div>
+					<div id='yellow' class='colorBox'><div class="colorBoxInterior" style='background-color: yellow'></div></div>
+					<div id='lawngreen' class='colorBox'><div class="colorBoxInterior" style='background-color: lawngreen'></div></div>
+					<div id='green' class='colorBox'><div class="colorBoxInterior" style='background-color: green'></div></div>
+					<div id='cadetblue' class='colorBox'><div class="colorBoxInterior" style='background-color: cadetblue'></div></div>
+					<div id='blue' class='colorBox'><div class="colorBoxInterior" style='background-color: blue'></div></div>
+					<div id='violet' class='colorBox'><div class="colorBoxInterior" style='background-color: violet'></div></div>
+					<div id='purple' class='colorBox'><div class="colorBoxInterior" style='background-color: purple'></div></div>
+					<div id='cyan' class='colorBox'><div class="colorBoxInterior" style='background-color: cyan'></div></div>
+					<div id='lightsalmon' class='colorBox'><div class="colorBoxInterior" style='background-color: lightsalmon'></div></div>
+					<div id='lightyellow' class='colorBox'><div class="colorBoxInterior" style='background-color: lightyellow'></div></div>
+					<div id='lime' class='colorBox'><div class="colorBoxInterior" style='background-color: lime'></div></div>
+					<div id='mistyrose' class='colorBox'><div class="colorBoxInterior" style='background-color: mistyrose'></div></div>
+					<div id='slateblue' class='colorBox'><div class="colorBoxInterior" style='background-color: slateblue'></div></div>
+					<div id='tomato' class='colorBox'><div class="colorBoxInterior" style='background-color: tomato'></div></div>
+					<div id='white' class='colorBox'><div class="colorBoxInterior" style='background-color: white'></div></div>
+					<div class='after'></div>
+					<label for="customColor">Custom color:</label>
+					<input id="customColor" class='rgb' type="color">
 				</div>
 			</div>
 			<canvas>
@@ -69,10 +111,18 @@
 		</main>
 
 		<footer>
-			<div id="python" class="langs"><a href="https://www.python.org/">Python</a></div>
-			<div id="c/c++" class="langs"><a href="https://www.cplusplus.com/">C/C++</a></div>
-			<div id="javascript" class="langs"><a href="https://www.w3schools.com/js/DEFAULT.asp">JavaScript</a></div>
-			<div id="html/css" class="langs"><a href="https://www.w3schools.com/html/">HTML/CSS</a></div>
+			<div id='blog' class='hyperlinks'><a href="interesting stuff/interesting stuff.html">blog</a></div>
+			<div id='' class='hyperlinks'><a href="">tutoring</div>
+			<!--<div id='patreon' class='hyperlinks'>If you like the website, and would like to buy me a coffee:</div>-->
+			<div class='personal'>
+				<a href="https://github.com/dramorak" ><img class='pictures' src='images/GitHub-Mark/PNG/github.png' alt='linkedin'></a>
+			</div>
+			<div class='personal'>
+				<a href="mailto:alexdinglis@gmail.com" ><img class='pictures' src='images/Gmail-logo.png' alt='gmail'></a>
+			</div>
+			<div class='personal'>
+				<a href="https://www.linkedin.com/in/alexander-inglis/" ><img class='pictures' src='images/linkedin.png' alt='linkedin'></a>
+			</div>
 		</footer>
 	</body>
 </html> 

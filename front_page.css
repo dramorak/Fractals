@@ -43,16 +43,17 @@ main {
 
 .menuSection {
 	width: 124px;
-	padding: 3px;
-	margin-bottom: 3px;
-	border-bottom: 1px solid rgb(227,228,229);
+	margin-left: 3px;
+	margin-right: 3px;
+	padding-bottom: 3px;
+	border: 1px solid rgb(227,228,229);
 }
 
 .sectionTitle {
 	clear: both;
 	width: 100%;
-	margin-top: 2px;
-	margin-bottom: 2px;
+	margin-top: 0;
+	margin-bottom: 7px;
 }
 
 .menuItem{
@@ -66,16 +67,9 @@ main {
 	border: 1px  solid rgb(100, 141, 229);
 	background-color: rgba(100, 141, 229, 0.3);
 }
-.menuItem_Selected{
-	float: left;
-	padding: 1px;
-	border: 1px  solid rgb(100, 141, 229);
-	background-color: rgba(100, 141, 229, 0.3);	
-}
 
 .sectionContent{
 	width: 122px;
-	border: 1px solid rgb(227,228,229);
 }
 .after{
 	display:block;
@@ -86,9 +80,11 @@ main {
 	margin: auto;
 	height:45px;
 	width:52px;
+	padding: 1px;
 	border: 1px solid rgb(227,228,229)
 }
-#branch .menuImage{
+
+.branch .menuImage{
 	height:45px;
 	width: 52px;
 	display:block;
@@ -97,13 +93,61 @@ main {
 	background-color: rgb(255,255,255);
 }
 
+#drawColorContainer {
+	width:120px;
+}
+#drawColor {
+	width: 24px;
+	height: 24px;
+}
 
+#backgroundColorContainer{
+	width: 120px;
+}
+#backgroundColor{
+	width: 24px;
+	height: 24px;
+}
+.label {
+	float: left;
+	margin-top: 7px;
+	margin-left: 5px;
+	font-size: 80%;
+}
+.colorBox {
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding: 2px;
+	margin: 1px;
+	border: 1px solid rgb(0,0,0);
+	background-color: rgb(245,246,247);
+}
+.colorBoxInterior {
+	width: 100%;
+	height: 100%;
+}
 #centerpiece {
 	display: block;
 	width: 500px;
 	height: auto;
 	margin: 125px auto;
 
+}
+
+label {
+	font-size: 80%;
+}
+.rgb {
+	margin: 5px 2px 5px 0;
+	height: 18px;
+	width: 28px;
+}
+
+.selected{
+	padding: 1px;
+	border: 1px  solid rgb(100, 141, 229);
+	background-color: rgba(100, 141, 229, 0.3);	
 }
 
 canvas:hover {
@@ -118,6 +162,21 @@ footer {
 	bottom: 0;
 }
 
+
+.hyperlinks {
+	float: left;
+	height: 36px;
+	padding-top: 6px;
+	padding-right: 5px;
+	padding-left: 5px;
+}
+.personal{
+	float: right;
+	height: 30px;
+	width: 30px;
+	margin: 3px;
+	margin-right: 5px;
+}
 .pictures {
 	height: 30px;
 	width: 30px;
@@ -129,18 +188,4 @@ a {
 }
 a:hover {
 	text-decoration: underline;
-}
-
-.langs{
-	float:left;
-	position: relative;
-	top: 7px;
-	height: 100%;
-	margin-left: 20px;
-
-	text-align: center;
-}
-.langs:hover{
-	text-decoration: underline;
-	background-color: rgb(180,180,180);
 }

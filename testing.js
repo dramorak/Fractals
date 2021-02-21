@@ -1,6 +1,6 @@
 // Testing, benchmarks.
 /*
-startRender = false;
+test = true;
 
 let trans1 = new Transformation(200,0,0,200,0,0);
 let trans2 = new Transformation(0,100,-100,0,0,0);

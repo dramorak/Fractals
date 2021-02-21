@@ -2,8 +2,9 @@
  Object/Function definition page 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
 
-
 var unit = 100; // 1 unit is defined as 100 pixels.
+
+var test = false;
 
 var sin = Math.sin;
 var cos = Math.cos;
@@ -13,19 +14,16 @@ var objectRenderArray = [];
 
 var meta = { // stores relevant information about the current drawstyle.
 	style : Line,
+	colorStyle: 'drawColor',
 	thickness : 1,
-	color: black,
+	drawColor: black,
+	backgroundColor: new Color(255,255,255),
 
 	renderThreshold: 2,
 	maxDepth : 100,
 	maxScale : 0.9,
 	maxSize: 10000,
 	operationLimit: 50000
-}
-
-var actions = { // holds a history of the objects added to fractal.
-	undoList : [],
-	unundoList : []
 }
 
 var fractal = {
@@ -65,7 +63,7 @@ var fractal = {
 	},
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
-			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, unit, meta.color)));
+			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, inv*unit, meta.color)));
 			actions.undoList.push(() => fractal.children.pop());
 		} else {
 			let trans = Transformation.generateTransformation3(start, end);
@@ -91,7 +89,7 @@ var fractal = {
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 
-				var trans = Transformation.generateTransformation1(start, end, unit, meta.color);
+				var trans = Transformation.generateTransformation1(start, end, inv*unit, meta.color);
 				//var transAbs = Transformation.generateTransformation3(start, end);
 
  				branch.transformation = trans;
@@ -129,13 +127,75 @@ var fractal = {
 	updater : function(){}
 }
 
+let actionObject = { // undo/redo methods
+	ctrl:{
+		z: function(){ //Undo action
+			if (actions.undoList.length !== 0){
+				let fractalPopObject = actions.undoList.pop();
+				
+				let lastObj = fractalPopObject();
+				actions.unundoList.push(lastObj);
+			}
+			setDrawLimits();
+		},
+		y: function(){ //un-undo action.
+			if(actions.unundoList.length !== 0){
+				let recoveredObj = actions.unundoList.pop();
+				if (recoveredObj instanceof Branch){
+					fractal.children.push(recoveredObj);
+					actions.undoList.push(() => fractal.children.pop());
+				} else {
+					fractal.trunk.push(recoveredObj);
+					actions.undoList.push(() => fractal.trunk.pop());
+				}
+			}
+			setDrawLimits();
+		}
+	},
+	noctrl:{}
+}
+
+var actions = { // holds a history of the objects added to fractal.
+	undoList : [],
+	unundoList : []
+}
+
+
 /* 
 Class definitions
 */
-function Color(r,g,b){
-	this.r = r;
-	this.b = b;
-	this.g = g;
+colorMap = {
+	black: new Color(0,0,0),
+	grey: new Color(128,128,128),
+	darkred:new Color('8B','00','00',hex=true),
+	red:new Color('FF','00','00',hex=true),
+	orange:new Color('FF','45','00',hex=true),
+	yellow:new Color('FF','FF','00',hex=true),
+	lawngreen:new Color('7C','FC','00',hex=true),
+	green:new Color('00','80','00',hex=true),
+	cadetblue:new Color('5F','9E','A0',hex=true),
+	blue:new Color('00','00','FF',hex=true),
+	violet:new Color('EE','82','EE',hex=true),
+	purple:new Color('80','00','80',hex=true),
+	cyan:new Color('00','FF','FF',hex=true),
+	lightsalmon:new Color('FF','A0','7A',hex=true),
+	lightyellow:new Color('FF','FF','E0',hex=true),
+	lime:new Color('00','FF','00',hex=true),
+	mistyrose:new Color('FF','E4','E1',hex=true),
+	slateblue:new Color('6A','5A','CD',hex=true),
+	tomato:new Color('FF','63','47',hex=true),
+	white:new Color('FF','FF','FF',hex=true)
+}
+function Color(r,g,b, hex=false){
+	if(hex){
+		this.r = hexToDecimal(r);
+		this.g = hexToDecimal(g);
+		this.b = hexToDecimal(b);
+	} else {
+		this.r = r;
+		this.b = b;
+		this.g = g;
+	}
 }
 Color.prototype.toString = function(){
 	return `rgb(${this.r},${this.g},${this.b})`;
@@ -195,12 +255,13 @@ function Triangle(transformation, color = black, thickness = 1){
 function Curve(transformation, color=black, thickness = 1){}
 function Oval(transformation, color=black, thickness = 1){}
 function Circle(transformation, color=black, thickness = 1){
-	this.template = [new Point(0,0)];
+	this.template = [new Point(0,0.5)];
 	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
 	this.build = function(){ //special draw function.
 		ctx.lineWidth = this.thickness;
-		ctx.strokeStyle=this.color.toString();
-		ctx.arc(this.points[0].x, this.points[0].y, this.size, 0, 2*Math.PI);
+		ctx.strokeStyle = this.color.toString();
+		ctx.moveTo(this.points[0].x+this.size/2, this.points[0].y);
+		ctx.arc(this.points[0].x, this.points[0].y, this.size/2, 0, 2*Math.PI);
 	}
 }
 function RightTriangle(transformation, color=black, thickness = 1){}
@@ -224,7 +285,7 @@ function Octagon(transformation, color=black, thickness = 1){
 	this.template = [new Point(-0.2071,0), new Point(0.2071,0), new Point(0.5, 0.292893), new Point(0.5, 0.7071), new Point(0.2071,1), new Point(-0.2071,1), new Point(-0.5, 0.7071), new Point(-0.5, 0.292893)];
 	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);	
 }
-function RoundedRectangle(transformation, color=black, thickness = 1){} //*
+function RoundedRectangle(transformation, color=black, thickness = 1){}
 function Polygon(transformation, color=black, thickness = 1){}
 function RightArrow(transformation, color=black, thickness = 1){}
 function LeftArrow(transformation, color=black, thickness = 1){}
@@ -297,7 +358,21 @@ Transformation.prototype.apply = function(operand){
 		let y = operand.y;
 
 		return new Point(this.a * x + this.c * y + this.e, this.d * y + this.b * x + this.f);
-	} else {
+	} else if (operand instanceof Circle){
+		let r = operand.color.r + (this.r - operand.color.r)/15;
+		let g = operand.color.g + (this.g - operand.color.g)/15;
+		let b = operand.color.b + (this.bl - operand.color.b)/15;
+
+		let newPts = map(operand.points, (el) => this.apply(el));
+		let newSize = operand.size * this.size;
+		let newClr = new Color(r,g,b);
+
+		let c = new Circle(id, newClr, operand.thickness);
+		c.points = newPts;
+		c.size = newSize;
+
+		return c;
+	}else {
 
 		let r = operand.color.r + (this.r - operand.color.r)/15;
 		let g = operand.color.g + (this.g - operand.color.g)/15;
@@ -418,9 +493,37 @@ function cache(f){
 	return helper;
 }
 
+function hexToDecimal(n){
+	// takes a hex string and returns a decimal number;
+	let map = {
+		'0':0,
+		'1':1,
+		'2':2,
+		'3':3,
+		'4':4,
+		'5':5,
+		'6':6,
+		'7':7,
+		'8':8,
+		'9':9,
+		'A':10,
+		'B':11,
+		'C':12,
+		'D':13,
+		'E':14,
+		'F':15,
+		a:10,
+		b:11,
+		c:12,
+		d:13,
+		e:14,
+		f:15
+	}
+	return map[n[0]] * 16 + map[n[1]];
+}
 // Container function for initializing interactive buttons in the web page.
 function initializeMenu(){
-	var shapesMap = {
+	var styleMap = {
 		"line":Line, 
 		"circle":Circle,
 		"triangle":Triangle, 
@@ -429,38 +532,117 @@ function initializeMenu(){
 		"octagon":Octagon, 
 		"fourstar":FourStar, 
 		"fivestar": FiveStar,
-		"branch":Branch
+		"branch":Branch,
+		"grab": "grab"
 	};
 
-	var last;
-
+	var last = {
+		target: undefined,
+		class: undefined
+	}
+	var lastColor;
 	let menu = document.querySelector('#menu');
 
 	//create event handler
 	function handler(e){
 		// find target of hit
 		let target = e.target;
-		if (target.getAttribute('class') !== 'menuImage'){
-			return;
-		}
 
-		target = target.parentNode;
-		meta.style = shapesMap[target.id];
-		target.setAttribute('class', 'menuItem menuItem_Selected');
+		// control flow based on target
+		let identifier = target.getAttribute('class');
 
-		if(last !== undefined){
-			last.setAttribute('class', 'menuItem');
-		}
+		if(identifier === 'menuImage'){
+			target = target.parentNode;
 
-		if (last === target){
-			last = undefined;
+			// special case:
+			if (target.id === 'undo'){
+				actionObject.ctrl.z();
+				return;
+			} else if (target.id === 'redo'){
+				actionObject.ctrl.y();
+				return;
+			}
+
+			// general case:
+			meta.style = styleMap[target.id];
+
+			// add the selected target to the 'selected' class
+			let c = target.getAttribute('class');
+			target.setAttribute('class', c + ' selected');
+
+			//clear the last target
+			if(last.target === undefined){
+				last.target = target;
+				last.class = c;
+			} else {
+					last.target.setAttribute('class', last.class);
+					if(last.target === target){
+						last.target = undefined;
+						last.class = undefined;
+					} else {
+						last.target = target;
+						last.class = c;
+					}
+			}
+
+
+		} else if (identifier === 'colorBoxInterior'){
+			let p = target.parentNode;
+
+			// background color:
+			if(p.id === 'backgroundColor'){
+				// change meta.drawStyle
+				meta.colorStyle = 'backgroundColor';
+
+				//stop highlighting drawColor box
+				document.querySelector('#drawColorContainer').setAttribute('class', '');
+
+				//start highlighting backgroundColor
+				document.querySelector('#backgroundColorContainer').setAttribute('class', 'selected');
+
+			} else if(p.id === 'drawColor'){
+				//change meta.drawStyle
+				meta.colorStyle = 'drawColor';
+
+				//stop highlighting backgroundColor box;
+				document.querySelector('#backgroundColorContainer').setAttribute('class', '');
+
+				//start highlighting drawColor box
+				document.querySelector('#drawColorContainer').setAttribute('class', 'selected');
+
+			} else {
+				let color = p.id;
+
+				// change the background of 'Chosen color'
+				document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
+
+				// change meta color information.
+				if(meta.colorStyle === 'backgroundColor'){
+					meta.backgroundColor = colorMap[color];
+				}else if(meta.colorStyle ==='drawColor'){
+					meta.color = colorMap[color]; 
+				}
+			}
 		} else {
-			last = target;
+			return;
 		}
 	}
 
 	//attatch handler to shapes menu.
 	menu.addEventListener('click', handler);
+
+	// color form handler
+	let customColor = document.querySelector('#customColor');
+	customColor.addEventListener('input', function(e){
+		let color = e.target.value;
+		if(meta.colorStyle === 'backgroundColor'){
+			meta.backgroundColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
+		} else if(meta.colorStyle === 'drawColor'){
+			meta.drawColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
+		}
+		document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
+	});
+
 }
 
 // limit detection.
@@ -476,7 +658,6 @@ function knapsack(A, r){
 
   return sum;
 }
-
 knapsack = cache(knapsack);
 
 function countNodes(radii, maxSize, renderThreshold){
@@ -511,7 +692,11 @@ function countNodes(radii, maxSize, renderThreshold){
 	return nodes;
 }
 
-function findMaxScale(radii, maxSize, renderThreshold, operationLimit){
+function countOperations(radii, maxSize, renderThreshold, weight){
+	return weight * countNodes(radii, maxSize, renderThreshold);
+}
+
+function findMaxScale(radii, maxSize, renderThreshold, weight, operationLimit){
 	// Finds the maximum scale of a new branch such that it lays below the operation limit.
 
 	let l = 0;
@@ -519,11 +704,11 @@ function findMaxScale(radii, maxSize, renderThreshold, operationLimit){
 	let count = 0;
 	let length = radii.length;
   let m = 0;
-	while(count < 8){
+	while(count < 12){
 		m = (l + r) / 2
 		radii[length] = m;
 
-		let n = countNodes(radii, maxSize, renderThreshold);
+		let n = countOperations(radii, maxSize, renderThreshold, weight);
 
 		if( n > operationLimit){
 			r = m;
@@ -536,21 +721,22 @@ function findMaxScale(radii, maxSize, renderThreshold, operationLimit){
 		count += 1 ;
 	}
 
-	return m;
+	radii.pop();
+	return l;
 }
 
 
-function findMaxSize(radii, maxSize, renderThreshold, operationLimit){
-	// Finds the maximum scale of a new branch such that it lays below the operation limit.
+function findMaxSize(radii, maxSize, renderThreshold, weight, operationLimit){
+	// Finds the maximum size of a new trunk element
 
 	let l = 0;
 	let r = 10000;
 	let count = 0;
-  let m = 0;
-	while(count < 8){
+  	let m = 0;
+	while(count < 12){
 		m = (l + r) / 2
 
-		let n = countNodes(radii, r, renderThreshold);
+		let n = countOperations(radii, m, renderThreshold, weight);
 
 		if( n > operationLimit){
 			r = m;
@@ -563,22 +749,32 @@ function findMaxSize(radii, maxSize, renderThreshold, operationLimit){
 		count += 1 ;
 	}
 
-	return m;
+	return l;
 }
 
 function setDrawLimits(){
+	function cost(n){
+		if (n === 2){
+			return 1;
+		} else {
+			return n;
+		}
+	}
+
 	let radii = [];
 	for(var i = 0; i < fractal.children.length; i++){
 		radii.push(fractal.children[i].transformation.size);
 	}
 
-	let s = 0;
+	let maxSize = 0;
+	let weight = 0;
 	for(var i = 0; i < fractal.trunk.length; i++){
-		s = Math.max(s, fractal.trunk[i].size);
+		maxSize = Math.max(maxSize, fractal.trunk[i].size);
+		weight += cost(fractal.trunk[i].points.length)
 	}
 
-	let scale = findMaxScale(radii, s, meta.renderThreshold, meta.operationLimit);
-	let size = findMaxSize(radii, s, meta.renderThreshold, meta.operationLimit);
+	let size = findMaxSize(radii, maxSize, meta.renderThreshold, weight, meta.operationLimit);
+	let scale = findMaxScale(radii, maxSize, meta.renderThreshold, weight, meta.operationLimit);
 
 	meta.maxScale = scale;
 	meta.maxSize = size;

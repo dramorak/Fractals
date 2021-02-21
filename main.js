@@ -2,14 +2,23 @@
 
 /* dev notes 
 - Might be a good idea to start using git for practice. 
-Feature timeline:
+todo:
 	-performance improvement (for increased depth)
 		- looking online for canvas optimizations.
-	- tweaking limiter ( maxSize needs to be fixed.);
 	-improved UI
 	-reformatted HTML page
+	-change canvas cursor on grab
+	- add a more complete color picker.
+	bugfixes: 
+		-background/draw coloring selector. need to research class precedence.
+		double clicking fucks up draws? 
+		releasing mouse on elements other than canvas fucks up draws.
+		ghost objects stick around if they're released off canvas
 
 	ideas:
+		- coordinates
+		-line thickness
+		- variable background color
 		- gridlines
 		-gallery of drawings.
 		-multiple fractals / supra-fractal objects
@@ -20,11 +29,7 @@ Feature timeline:
 		erasure
 		share buttons
 		Support for pixel perfect fractals? Maybe an advanced menu that lets the user create images using numeric values instead of an inexact GUI
-	bugfixes: 
-		circles not branching properly
-		scaling is bugged, goes to wrong location
-		double clicking fucks up draws?
-		ghost objects stick around if they're released off canvas
+
 	-*/
 
 
@@ -41,14 +46,9 @@ Feature timeline:
 
 
 	UI todo list:
-		- undo button, un-undo button
-		- grab button
 		- colors
-		- better shapes
 		- improved 'branch' section layout/content
 		- redo header bar
-		- change content of footer bar.
-		-
    */ 
 
 const canvas = document.querySelector('canvas');
@@ -73,32 +73,37 @@ window.addEventListener('resize', function(){
 // Mouse handling.
 let canvasCenter = new Point(Math.floor(width/2), Math.floor(height/2));
 let scale = 1;
-let inv = 1/scale;
+let inv = 1 / scale;
 let x = 0;
 let y = 0;
 let mousedown = false;
+let mouse = {
+	x:0,
+	y:0
+}
 
 function mousemoveHandler(e){
 	if (mousedown === false){ return;}
-	if(meta.style === 'Grab'){
+	if(meta.style === 'grab'){
 		let dx = e.clientX - x;
 		let dy = e.clientY - y;
 
 		x = e.clientX;
 		y = e.clientY;
 
-		canvasCenter.x += dx;
+		canvasCenter.x += dx;                          
 		canvasCenter.y += dy;
 
 		ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y);
 	}
 }
+
 function mouseupHandler(e){
 	if (mousedown === false){
 		return;
 	}
 
-	if (meta.style === "Grab"){
+	if (meta.style === "grab"){
 	}else{
 		fractal.pop();
 		fractal.pushNewObject(new Point(x,y), windowToCanvas(e));
@@ -109,7 +114,7 @@ function mouseupHandler(e){
 	mousedown = false;
 }
 function mousedownHandler(e){
-	if (meta.style === 'Grab'){
+	if (meta.style === 'grab'){
 		x = e.clientX;
 		y = e.clientY;
 	} else {
@@ -127,55 +132,42 @@ function wheelHandler(e){
 	// moves in units of 125
 	// negative means the wheel has been scrolled up
 	// positive means the wheel has been scrolled down.
-	scale = Math.min(Math.max(scale-e.deltaY/125 * 0.25, 0.125), 5);
-	inv = 1/scale;
+	newScale = Math.min(Math.max(scale*(1-e.deltaY/125 * 0.25), 0.125), 5);
+	newInv = 1/newScale;
+
+	// update canvasCenter 
+	canvasCenter.x = mouse.x*(1-newScale/scale) + newScale/scale*canvasCenter.x;
+	canvasCenter.y = mouse.y*(1-newScale/scale) + newScale/scale*canvasCenter.y;
+
+	// update Scale,Inv
+	scale = newScale;
+	inv = newInv;
 
 	// update ctx transform attribute
 	ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y)
+}
+
+function updateMouseCoords(e){
+	mouse.x = e.clientX;
+	mouse.y = e.clientY;
 }
 
 canvas.addEventListener('wheel', wheelHandler);
 canvas.addEventListener('mousedown', mousedownHandler);
 canvas.addEventListener('mouseup', mouseupHandler);
 canvas.addEventListener('mousemove', mousemoveHandler);
+window.addEventListener('mousemove', updateMouseCoords);
 
 // Coordinate transformation from window to canvas.
 function windowToCanvas(e){
+	// inverse of canvas to window.
 	return new Point(inv*(e.clientX - canvasCenter.x), -inv*(e.clientY - canvasCenter.y));
 }
 // clear canvas function
-function clear(){ctx.fillStyle = 'rgb(255,255,255)'; ctx.fillRect(inv*(-canvasCenter.x), inv*(canvasCenter.y - height), inv*width, inv*height);}
+function clear(){ctx.fillStyle = meta.backgroundColor.toString(); ctx.fillRect(inv*(-canvasCenter.x), inv*(canvasCenter.y - height), inv*width, inv*height);}
 
 // keyboard handlers
 function keydownHandler(e){
-	let actionObject = {
-		ctrl:{
-			z: function(){ //Undo action
-				if (actions.undoList.length !== 0){
-					let fractalPopObject = actions.undoList.pop();
-					
-					let lastObj = fractalPopObject();
-					actions.unundoList.push(lastObj);
-				}
-				setDrawLimits();
-			},
-			y: function(){ //un-undo action.
-				if(actions.unundoList.length !== 0){
-					let recoveredObj = actions.unundoList.pop();
-					if (recoveredObj instanceof Branch){
-						fractal.children.push(recoveredObj);
-						actions.undoList.push(() => fractal.children.pop());
-					} else {
-						fractal.trunk.push(recoveredObj);
-						actions.undoList.push(() => fractal.trunk.pop());
-					}
-				}
-				setDrawLimits();
-			}
-		},
-		noctrl:{}
-	}
-
 	if (e.ctrlKey){
 		if (actionObject.ctrl[e.key] !== undefined){
 			actionObject.ctrl[e.key]();
@@ -191,7 +183,7 @@ window.addEventListener('keydown', keydownHandler);
 
 //Object renderer
 objectRenderArray.push(fractal);
-objectRenderArray.push(new Circle(new Transformation(5,0,0,5,0,0), 'rgb(255,127,39)'))
+objectRenderArray.push(new Circle(new Transformation(10,0,0,10,0,0), 'rgb(255,127,39)'))
 
 function render(timestamp){
 	//clear
@@ -209,6 +201,7 @@ initializeMenu();
 
 if (startRender){ 
 	render(); 
-}else {
+} 
+if (test){
 	console.log(`Total time: ${fractalDrawBenchmark()}`);
 }
