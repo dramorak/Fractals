@@ -16,7 +16,7 @@
 				<div id="fractals" class="menuSection">
 					<p class="sectionTitle">Branches</p>
 					<div class=sectionContent>
-						<div id="branch">
+						<div id="branch" class="branchContainer">
 							<img src="images/branch.png" alt="branch" class="menuImage">
 						</div>
 						<div class="after"></div>
@@ -25,16 +25,31 @@
 				<div id="tools" class="menuSection">
 					<p class="sectionTitle">Tools</p>
 					<div class="sectionContent">
-						<div id='grab' class="menuItem">
+						<div id='grab' class="menuItem toolItem">
 							<img src="images/handGrab.png" alt='grab' class='menuImage'>
+							<div class="informationBox">Grab screen</div>
 						</div>
-						<div id='undo' class="menuItem">
+						<div id="center" class="menuItem toolItem">
+							<img src="images/center.png" alt="redo" class="menuImage">
+							<div class="informationBox">Center screen</div>
+						</div>
+						<div id='undo' class="menuItem toolItem">
 							<img src="images/undo.png" alt="undo" class="menuImage">
+							<div class="informationBox">Undo</div>
 						</div>
-						<div id='redo' class="menuItem">
+						<div id='redo' class="menuItem toolItem">
 							<img src="images/redo.png" alt="redo" class="menuImage">
+							<div class="informationBox">Redo</div>
 						</div>
 						<div class="after"></div>
+					</div>
+				</div>
+				<div id="thickness" class="menuSection">
+					<p class='sectionTitle'>Size</p>
+					<div class = "sectionContent">
+						<div id="thicknessDisplay" class="thicknessContainer">
+							<img src="images/sizes.png" alt="Line Size" class="menuImage">
+						</div>
 					</div>
 				</div>
 				<div id="shapes" class="menuSection">
@@ -66,18 +81,27 @@
 						</div>
 						<div class="after"></div>
 					</div>
+					<div id="fillStyle" class='sectionContentFooter'>
+						<div id="stroke" class="menuItem">
+							<img src="images/outline.png" alt="outline" class="menuImage">
+						</div>
+						<div id="fill" class="menuItem">
+							<img src="images/fill.png" alt="fill" class="menuImage">
+						</div>
+						<div class="after"></div>
+					</div>
 				</div>
 				<div id='colors' class='menuSection'>
 					<p class='sectionTitle'>Colors</p>
-					<div id='drawColorContainer' class='selected'>
+					<div id='drawColorContainer' class='colorStyle selected'>
 						<div id='drawColor' class='colorBox'><div class="colorBoxInterior" style='background-color: black'></div></div>
-						<div class="label"> draw color</div>
+						<div class="label"> foreground color </div>
 						<div class='after'></div>
 					</div>
-					<div id='backgroundColorContainer'>
-					<div id='backgroundColor' class='colorBox'><div class="colorBoxInterior" style='background-color: white'></div></div>
-					<div class="label"> background color</div>
-					<div class='after'></div>
+					<div id='backgroundColorContainer' class='colorStyle'>
+						<div id='backgroundColor' class='colorBox'><div class="colorBoxInterior" style='background-color: white'></div></div>
+						<div class="label"> background color</div>
+						<div class='after'></div>
 					</div>
 					<div id='black' class='colorBox'><div class="colorBoxInterior" style='background-color: black'></div></div>
 					<div id='grey' class='colorBox'><div class="colorBoxInterior" style='background-color: grey'></div></div>
@@ -103,11 +127,48 @@
 					<label for="customColor">Custom color:</label>
 					<input id="customColor" class='rgb' type="color">
 				</div>
+				<div id="file" class="menuSection">
+					<p class="sectionTitle">File</p>
+					<div class="sectionContent">
+						<div id="save" class="menuItem">
+							<img src="images/save.png" alt='save' class='menuImage'>
+							<div class="informationBox">Save</div>
+						</div>
+						<div id="new" class="menuItem">
+							<img src="images/new.png" alt='new' class='menuImage'>
+							<div class="informationBox">New</div>
+						</div>
+						<div class='after'></div>
+					</div>
+				</div>
+				<!--
+				<div id="share" class="menuSection">
+					<p class="sectionTitle">Share your creation!</p>
+					<div class="sectionContent">
+						<div id="instagram" class="menuItem">
+
+						</div>
+						<div id="facebook" class="menuItem">
+
+						</div>
+						<div id="twitter" class="menuItem">
+
+						</div>
+						<div class="after"></div>
+					</div>
+				</div>
+				-->
 			</div>
 			<canvas>
 				<!-- content when browser does not support canvas  -->
 				<img id="centerpiece" alt="Everywhere you look, infinity." src="images/graphic.webp">
 			</canvas>
+			<div id="thicknessInputMenu" class="thicknessInputMenuContainer">
+				<div id="one" class="thicknessOption"><img src="images/one.png" alt="one" class="menuImage"></div>
+				<div id="two" class="thicknessOption"><img src="images/two.png" alt="two" class="menuImage"></div>
+				<div id="three" class="thicknessOption"><img src="images/three.png" alt="three" class="menuImage"></div>
+				<div id="four" class="thicknessOption"><img src="images/four.png" alt="four" class="menuImage"></div>
+			</div>
 		</main>
 
 		<footer>

@@ -68,41 +68,124 @@ main {
 	background-color: rgba(100, 141, 229, 0.3);
 }
 
+.toolItem{
+	width:21px;
+	height:21px;
+}
+
+.informationBox {
+	position:absolute;
+	display:none;
+	z-index: 1;
+	background-color: rgb(255,255,255);
+	border: 1px solid rgb(0,0,0);
+}
+
+.menuItem:hover .informationBox{
+	display: block;
+}
+
+#stroke{
+	width: 63px;
+	height: 16px;
+	margin-right: 5px;
+	margin-top: 4px;
+}
+#fill {
+	width: 37px;
+	height: 20px;
+}
+
+
 .sectionContent{
+	position:relative;
 	width: 122px;
 }
+
+.sectionContentFooter{
+	width:122px;
+}
+
+#file .sectionTitle { 
+	color: white;
+	background-color: rgb(41,140,225);
+ }
 .after{
 	display:block;
 	clear:both;
 }
 
-#branch {
+.branchContainer {
 	margin: auto;
 	height:45px;
 	width:52px;
 	padding: 1px;
-	border: 1px solid rgb(227,228,229)
+	border: 1px solid rgb(227,228,229);
+	background-color: rgb(255,255,255);
 }
 
-.branch .menuImage{
+.branchContainer:hover{
+	padding: 1px;
+	border: 1px  solid rgb(100, 141, 229);
+	background-color: rgba(100, 141, 229, 0.3);	
+}
+.menuImage {
+	margin: auto;
+}
+
+#branch .menuImage{
 	height:45px;
 	width: 52px;
 	display:block;
 }
+
+.thicknessContainer {
+	width:70px;
+	height:40px;
+	padding:2px;
+	margin: 0 auto;
+}
+
+.thicknessContainer:hover {
+	padding:1px;
+	border: 1px  solid rgb(100, 141, 229);
+	background-color: rgba(100, 141, 229, 0.3);
+}
+
+.thicknessInputMenuContainer {
+	display: none;
+	position: absolute;
+	top: 120px;
+	left: 100px;
+	width: 135px;
+	height:136px;
+
+	border:1px solid rgb(227,228,229);
+	background-color: rgb(255,255,255);
+}
+
+.thicknessOption {
+	width: 131px;
+	height: 30px;
+
+	padding: 2px;
+}
+
+.thicknessOption:hover {
+	background-color: rgba(100,141,229,0.3);
+}
+
 #shapes .sectionContent{
 	background-color: rgb(255,255,255);
 }
 
-#drawColorContainer {
+.colorStyle{
 	width:120px;
+	padding: 2px;
 }
 #drawColor {
 	width: 24px;
 	height: 24px;
-}
-
-#backgroundColorContainer{
-	width: 120px;
 }
 #backgroundColor{
 	width: 24px;
@@ -132,7 +215,6 @@ main {
 	width: 500px;
 	height: auto;
 	margin: 125px auto;
-
 }
 
 label {
@@ -150,10 +232,8 @@ label {
 	background-color: rgba(100, 141, 229, 0.3);	
 }
 
-canvas:hover {
-	cursor: crosshair;
+canvas {
 }
-
 footer {
 	position: absolute;
 	background-color: rgb(230,231,232);

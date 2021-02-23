@@ -5,20 +5,33 @@
 todo:
 	-performance improvement (for increased depth)
 		- looking online for canvas optimizations.
-	-improved UI
-	-reformatted HTML page
-	-change canvas cursor on grab
-	- add a more complete color picker.
+		- Only increase render threshold in vicinity of mouse pointer?
+		- expensively draw up to depth 8, then uniform the color and draw adum infinitum ? 
+	- changing draw order.
+	- reformat tools
+	- change fractal center.
+	- changing draw order to something more sensible.
+	- change size limiter (doesn't always seem to work as wanted? );
+
 	bugfixes: 
-		-background/draw coloring selector. need to research class precedence.
 		double clicking fucks up draws? 
 		releasing mouse on elements other than canvas fucks up draws.
 		ghost objects stick around if they're released off canvas
+		crashes when too many branches are added before a trunk element is created.
+		menu formatting issues on mozzilla
+
+	UI bugfixes
+		mozzilla :
+			menu formatting issues on mozzilla
+			scroll is very slow on mozzilla.
+			custom color behaves differently on mozzilla.
+			performance is a lot worse than chrome's
+		edge:
 
 	ideas:
+		- infinit scaling? 
+		- none color type
 		- coordinates
-		-line thickness
-		- variable background color
 		- gridlines
 		-gallery of drawings.
 		-multiple fractals / supra-fractal objects
@@ -34,22 +47,223 @@ todo:
 
 
 /* 
-	- improve performance.
-	- Reformat the HTML page, include all features up till now.
-
-
-	- Work on blog, finish post on Y-combinator and include post about this website, including a post about this website.
+	- finish webpage.
+	- Work on blog linked sites:
+		-blog
+		- tutoring ?
+		- merchandise
+		- affiliate links
+		- about me
+		- about fractals
+		- about drawFractal
 	- Research about search engine optimization to increase traffic to this website.
-	- Research ways to advertise website (reddit? Facebook?)
+	- Research ways to advertise website 
+		- reddit
+		- facebook
+		- SEO 
+		- family
+		- alumni association?
+		- teachers I know
 	- Research ways to monetize.
+
 	- Make website public
-
-
-	UI todo list:
-		- colors
-		- improved 'branch' section layout/content
-		- redo header bar
    */ 
+
+// Container function for initializing interactive buttons in the web page.
+function initializeMenu(){
+	var styleMap = {
+		"line":Line, 
+		"circle":Circle,
+		"triangle":Triangle, 
+		"rectangle":Rectangle, 
+		"hexagon":Hexagon, 
+		"octagon":Octagon, 
+		"fourstar":FourStar, 
+		"fivestar": FiveStar,
+		"branch":Branch,
+		"grab": "grab"
+	};
+	var numberMap = {
+		one:1,
+		two:2,
+		three:3,
+		four:4,
+		five:5,
+		six:6,
+		seven:7,
+		eight:8,
+		nine:9,
+		ten:10
+	}
+	var last = {
+		target: undefined,
+		class: undefined
+	}
+	var thicknessInputMenu_isOpen = false;
+	let menu = document.querySelector('#menu');
+	let thicknessInputMenu = document.querySelector('#thicknessInputMenu'); // 
+
+	//create event handler
+	function handler(e){
+		// find target of hit
+		let target = e.target;
+		// if thicknessSelectBoolean is true, then the thicknessOptionPanel is open, and needs to be closed.
+		if(thicknessInputMenu_isOpen){
+			document.querySelector('#thicknessInputMenu').style.display = 'none';
+			document.querySelector('#thicknessDisplay').setAttribute('class', 'thicknessContainer');
+			thicknessInputMenu_isOpen = false;
+		}
+		// control flow based on target
+		let identifier = target.getAttribute('class');
+
+		if(identifier === 'menuImage'){
+			target = target.parentNode;
+
+			// special cases:
+			if (target.id === 'undo'){
+				actionObject.ctrl.z();
+				return;
+			} else if (target.id === 'redo'){
+				actionObject.ctrl.y();
+				return;
+			} else if(target.id === 'center'){
+				resetCoordinates();
+				return;
+			}else if(target.id === 'thicknessDisplay'){
+				document.querySelector('#thicknessDisplay').setAttribute('class', 'thicknessContainer selected');
+
+				// display thicknessInputMenu
+				let thicknessInputMenu = document.querySelector('#thicknessInputMenu');
+				thicknessInputMenu.style.display = 'block';
+
+				//set thicknessSelectBoolean to true
+				thicknessInputMenu_isOpen = true;
+
+				return;
+			} else if(target.getAttribute('class') === 'thicknessOption'){
+				//set thickness
+				meta.thickness = numberMap[target.id];
+				return;
+			} else if(target.id === 'stroke'){
+				meta.fillStyle = 'stroke';
+
+				document.querySelector('#stroke').setAttribute('class', 'menuItem selected');
+				document.querySelector('#fill').setAttribute('class', 'menuItem');
+
+			} else if(target.id === 'fill'){
+				meta.fillStyle = 'fill';
+
+				document.querySelector('#stroke').setAttribute('class', 'menuItem');
+				document.querySelector('#fill').setAttribute('class', 'menuItem selected');
+			} else if(target.id === 'save') {
+				function saveContext(blob){
+					var blobURL = URL.createObjectURL(blob);
+					window.open(blobURL);
+				}
+				canvas.toBlob(saveContext, type='image/png');
+				return;
+			} else if(target.id === 'new'){
+				window.location.replace(window.location.href);
+				return;
+			} else {
+				// general cases:
+				meta.style = styleMap[target.id];
+
+				// add the selected target to the 'selected' class
+				let c = target.getAttribute('class');
+				target.setAttribute('class', c + ' selected');
+
+				//clear the last target
+				if(last.target === undefined){
+					last.target = target;
+					last.class = c;
+				} else {
+						last.target.setAttribute('class', last.class);
+						if(last.target === target){
+							last.target = undefined;
+							last.class = undefined;
+							meta.style = Line;
+						} else {
+							last.target = target;
+							last.class = c;
+						}
+				}
+			}
+		} else if (identifier === 'colorBoxInterior'){
+			let p = target.parentNode;
+
+			// background color:
+			if(p.id === 'backgroundColor'){
+				// change meta.drawStyle
+				meta.colorStyle = 'backgroundColor';
+
+				//stop highlighting drawColor box
+				document.querySelector('#drawColorContainer').setAttribute('class', 'colorStyle');
+
+				//start highlighting backgroundColor
+				document.querySelector('#backgroundColorContainer').setAttribute('class', 'colorStyle selected');
+
+
+			} else if(p.id === 'drawColor'){
+				//change meta.drawStyle
+				meta.colorStyle = 'drawColor';
+
+				//stop highlighting backgroundColor box;
+				document.querySelector('#backgroundColorContainer').setAttribute('class', 'colorStyle');
+
+				//start highlighting drawColor box
+				document.querySelector('#drawColorContainer').setAttribute('class', 'colorStyle selected');
+
+
+			} else {
+				let color = p.id;
+
+				// change the background of 'Chosen color'
+				document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
+
+				// change meta color information.
+				if(meta.colorStyle === 'backgroundColor'){
+					meta.backgroundColor = colorMap[color];
+				}else if(meta.colorStyle ==='drawColor'){
+					meta.drawColor = colorMap[color]; 
+				}
+			}
+		} else {
+			return;
+		}
+	}
+
+	//attatch handler to menu.
+	menu.addEventListener('click', handler);
+	thicknessInputMenu.addEventListener('click', handler);
+
+	// color form handler
+	function setColor(e){
+		let color = e.target.value;
+		if(meta.colorStyle === 'backgroundColor'){
+			meta.backgroundColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
+		} else if(meta.colorStyle === 'drawColor'){
+			meta.drawColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
+		}
+		document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
+	}
+	let customColor = document.querySelector('#customColor');
+	customColor.addEventListener('input', setColor);
+
+	//canvas cursor handler.
+	const canvas = document.querySelector('canvas');
+	canvas.addEventListener('mouseenter', function(){
+		if(meta.style === 'grab'){
+			document.querySelector('main').style.cursor = 'grabbing';
+		} else {
+			document.querySelector('main').style.cursor = 'crosshair';		
+		}
+
+	});
+	canvas.addEventListener('mouseleave', function(){
+		document.querySelector('main').style.cursor = 'auto'
+	});
+}
 
 const canvas = document.querySelector('canvas');
 const ctx = canvas.getContext('2d');
@@ -61,14 +275,19 @@ var height = canvas.height = window.innerHeight - 36;
 
 ctx.fillStyle = 'rgb(0,0,0)';
 ctx.setTransform(1,0,0,-1,Math.floor(width/2), Math.floor(height/2));
-// updates dimensions of canvas on window resize.
-window.addEventListener('resize', function(){
+
+function resetCoordinates(){
 	width = canvas.width = window.innerWidth;
 	height = canvas.height = window.innerHeight - 36;
 	canvasCenter.x = width/2;
 	canvasCenter.y = height/2;
+	scale = 1;
+	inv = 1;
+	boundaries.updateBoundaries();
 	ctx.setTransform(1, 0, 0, -1, width/2, height/2);
-});
+}
+// updates dimensions of canvas on window resize.
+window.addEventListener('resize', resetCoordinates);
 
 // Mouse handling.
 let canvasCenter = new Point(Math.floor(width/2), Math.floor(height/2));
@@ -80,6 +299,18 @@ let mousedown = false;
 let mouse = {
 	x:0,
 	y:0
+}
+let boundaries = {
+	top: height/2,
+	right: width/2,
+	bottom: -height/2,
+	left: -width/2,
+	updateBoundaries: function() {
+		boundaries.top = inv*canvasCenter.y;
+		boundaries.right = inv*(width - canvasCenter.x);
+		boundaries.bottom = -inv*(height - canvasCenter.y);
+		boundaries.left = -inv*canvasCenter.x;
+	}
 }
 
 function mousemoveHandler(e){
@@ -95,6 +326,7 @@ function mousemoveHandler(e){
 		canvasCenter.y += dy;
 
 		ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y);
+		boundaries.updateBoundaries();
 	}
 }
 
@@ -114,16 +346,18 @@ function mouseupHandler(e){
 	mousedown = false;
 }
 function mousedownHandler(e){
-	if (meta.style === 'grab'){
-		x = e.clientX;
-		y = e.clientY;
-	} else {
-		let start = windowToCanvas(e);
-		x = start.x;
-		y = start.y;
-		fractal.pushGhostObject(start);
+	if(e.button === 0){
+		if (meta.style === 'grab'){
+			x = e.clientX;
+			y = e.clientY;
+		} else {
+			let start = windowToCanvas(e);
+			x = start.x;
+			y = start.y;
+			fractal.pushGhostObject(start);
+		}
+		mousedown = true;
 	}
-	mousedown = true;
 }
 
 function wheelHandler(e){
@@ -143,6 +377,12 @@ function wheelHandler(e){
 	scale = newScale;
 	inv = newInv;
 
+	//update boundaries
+	boundaries.updateBoundaries();
+
+	// change render limit
+	meta.renderThreshold = Math.max(Math.floor(inv) + 2,4);
+
 	// update ctx transform attribute
 	ctx.setTransform(scale, 0, 0, -scale, canvasCenter.x, canvasCenter.y)
 }
@@ -154,7 +394,7 @@ function updateMouseCoords(e){
 
 canvas.addEventListener('wheel', wheelHandler);
 canvas.addEventListener('mousedown', mousedownHandler);
-canvas.addEventListener('mouseup', mouseupHandler);
+window.addEventListener('mouseup', mouseupHandler);
 canvas.addEventListener('mousemove', mousemoveHandler);
 window.addEventListener('mousemove', updateMouseCoords);
 
@@ -183,7 +423,7 @@ window.addEventListener('keydown', keydownHandler);
 
 //Object renderer
 objectRenderArray.push(fractal);
-objectRenderArray.push(new Circle(new Transformation(10,0,0,10,0,0), 'rgb(255,127,39)'))
+objectRenderArray.push(new Circle(new Transformation(10,0,0,10,0,-5), 'rgb(255,127,39)'))
 
 function render(timestamp){
 	//clear

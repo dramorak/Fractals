@@ -1,35 +1,35 @@
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++
  Object/Function definition page 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
-
-var unit = 100; // 1 unit is defined as 100 pixels.
-
+var startRender = true;
 var test = false;
+
 
 var sin = Math.sin;
 var cos = Math.cos;
 
-var startRender = true;
 var objectRenderArray = [];
 
 var meta = { // stores relevant information about the current drawstyle.
 	style : Line,
 	colorStyle: 'drawColor',
-	thickness : 1,
-	drawColor: black,
+	thickness : 2,
+	drawColor: new Color(0,0,0),
 	backgroundColor: new Color(255,255,255),
+	fillStyle: 'stroke',
 
-	renderThreshold: 2,
+	renderThreshold: 4,
 	maxDepth : 100,
-	maxScale : 0.9,
+	maxScale : 0.85,
 	maxSize: 10000,
-	operationLimit: 50000
+	operationLimit: 10000,
+	unit: 100	// 1 unit is defined as 100 pixels.
 }
 
 var fractal = {
 	trunk: [],
 	children: [],
-	build: function(){
+	draw: function(){
 
 		function helper(d, objArray){
 			// filter objArray, discluding small objects
@@ -41,7 +41,7 @@ var fractal = {
 
 			// draw the elements of obj array, fill temp
 			for(var i = 0; i < objArray.length; i++){
-				objArray[i].build();
+				objArray[i].draw();
 			}
 
 			// iterate over transformation array
@@ -56,18 +56,13 @@ var fractal = {
 
 		helper(0, fractal.trunk);
 	},
-	draw: function(){
-		ctx.beginPath();
-		fractal.build();
-		ctx.stroke();
-	},
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
-			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, inv*unit, meta.color)));
+			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, inv*meta.unit, meta.drawColor, meta.fillStyle)));
 			actions.undoList.push(() => fractal.children.pop());
 		} else {
 			let trans = Transformation.generateTransformation3(start, end);
-			fractal.trunk.push(new meta.style(trans, meta.color, meta.thickness));
+			fractal.trunk.push(new meta.style(trans, meta.drawColor, meta.thickness, meta.fillStyle));
 			actions.undoList.push(() => fractal.trunk.pop());
 		}
 
@@ -89,7 +84,7 @@ var fractal = {
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 
-				var trans = Transformation.generateTransformation1(start, end, inv*unit, meta.color);
+				var trans = Transformation.generateTransformation1(start, end, inv*meta.unit, meta.drawColor, meta.fillStyle);
 				//var transAbs = Transformation.generateTransformation3(start, end);
 
  				branch.transformation = trans;
@@ -102,7 +97,7 @@ var fractal = {
 			//objectRenderArray.push(displayCircle);
 
 		} else {
-			var obj = new meta.style(Transformation.generateTransformation3(start, new Point(start.x, start.y)), meta.color, meta.thickness);
+			var obj = new meta.style(Transformation.generateTransformation3(start, new Point(start.x, start.y)), meta.drawColor, meta.thickness, meta.fillStyle);
 			fractal.updater = function(e){
 				var end = windowToCanvas(e);
 				var trans = Transformation.generateTransformation3(start, end);
@@ -186,6 +181,10 @@ colorMap = {
 	tomato:new Color('FF','63','47',hex=true),
 	white:new Color('FF','FF','FF',hex=true)
 }
+
+black = colorMap.black;
+white = colorMap.white;
+
 function Color(r,g,b, hex=false){
 	if(hex){
 		this.r = hexToDecimal(r);
@@ -197,12 +196,13 @@ function Color(r,g,b, hex=false){
 		this.g = g;
 	}
 }
-Color.prototype.toString = function(){
-	return `rgb(${this.r},${this.g},${this.b})`;
+Color.prototype.toString = function(hex=false){
+	if(hex){
+		return `#${zeroFill(decimalToHex(this.r),2)}${zeroFill(decimalToHex(this.g),2)}${zeroFill(decimalToHex(this.b),2)}`;
+	} else {
+		return `rgb(${this.r},${this.g},${this.b})`;	
+	}
 }
-
-var black = new Color(0,0,0);
-
 function Branch(transformation){
 	this.transformation = transformation;
 
@@ -213,10 +213,11 @@ function Point(x,y){
 	this.y = y;
 }
 
-function Shape(points = [], size=undefined, color = black, thickness = 1){
+function Shape(points = [], size=undefined, color = black, thickness = 1, style='stroke'){
 	this.points = points;
 	this.color = color;
 	this.thickness = thickness;
+	this.style = style;
 	if(size === undefined){
 		this.size = radius(points);
 	} else {
@@ -225,81 +226,93 @@ function Shape(points = [], size=undefined, color = black, thickness = 1){
 
 	this.build = function(){
 		let last = this.points.length - 1;
-		ctx.lineWidth = this.thickness;
-		ctx.strokeStyle = this.color.toString();
 		ctx.moveTo(this.points[last].x, this.points[last].y);
 		this.points.forEach((el) => ctx.lineTo(el.x, el.y));
 	}
 
 	this.draw = function(){
-		ctx.beginPath();
-		this.build();
-		ctx.stroke();
+		// Check to see if the shape is in frame, and if it isn't, don't draw
+		let x = this.points[0].x;
+		let y = this.points[0].y;
+
+		if(x + this.size <= boundaries.left || x - this.size >= boundaries.right || y + this.size <= boundaries.bottom || y - this.size >= boundaries.top){
+			return;
+		} else {
+			if(this.style === 'stroke' || this.points.length === 2){
+				ctx.lineWidth = this.thickness;
+				ctx.strokeStyle = this.color;
+				ctx.beginPath();
+				this.build();
+				ctx.stroke();
+			}else if(this.style === 'fill'){
+				ctx.fillStyle = this.color;
+				ctx.beginPath();
+				this.build();
+				ctx.fill();
+			} else {
+			}
+		}
 	}
 }
-function Line(transformation, color=black, thickness = 1){
+function Line(transformation, color=black, thickness = 1, style='stroke'){
 	this.template = [new Point(0,0), new Point(0,1)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);
 
 	this.build = function(){ // unique draw function for performance reasons.
-		ctx.strokeStyle = this.color.toString();
-		ctx.lineWidth = this.thickness;
 		ctx.moveTo(this.points[0].x, this.points[0].y);
 		ctx.lineTo(this.points[1].x, this.points[1].y);
 	}
 }
-function Triangle(transformation, color = black, thickness = 1){
+function Triangle(transformation, color = black, thickness = 1, style='stroke'){
 	this.template = [new Point(-0.5, 0), new Point(0.5, 0), new Point(0,1)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);
 }
-function Curve(transformation, color=black, thickness = 1){}
-function Oval(transformation, color=black, thickness = 1){}
-function Circle(transformation, color=black, thickness = 1){
+function Curve(transformation, color=black, thickness = 1, style='stroke'){}
+function Oval(transformation, color=black, thickness = 1, style='stroke'){}
+function Circle(transformation, color=black, thickness = 1, style='stroke'){
 	this.template = [new Point(0,0.5)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);
 	this.build = function(){ //special draw function.
-		ctx.lineWidth = this.thickness;
-		ctx.strokeStyle = this.color.toString();
 		ctx.moveTo(this.points[0].x+this.size/2, this.points[0].y);
 		ctx.arc(this.points[0].x, this.points[0].y, this.size/2, 0, 2*Math.PI);
 	}
 }
-function RightTriangle(transformation, color=black, thickness = 1){}
-function Rectangle(transformation, color=black, thickness = 1){
+function RightTriangle(transformation, color=black, thickness = 1, style='stroke'){}
+function Rectangle(transformation, color=black, thickness = 1, style='stroke'){
 	this.template = [new Point(-0.5,0), new Point(0.5,0), new Point(0.5,1), new Point(-0.5,1)]
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);
 } 
-function Pentagon(transformation, color=black, thickness = 1){}
-function Hexagon(transformation, color=black, thickness = 1){
+function Pentagon(transformation, color=black, thickness = 1, style='stroke'){}
+function Hexagon(transformation, color=black, thickness = 1, style='stroke'){
 	// x = 0.2257
 	// 1-x = 0.7743
 	this.template = [new Point(0,0), new Point(0.5, 0.2257), new Point(0.5, 0.7743), new Point(0,1), new Point(-0.5,0.7743), new Point(-0.5,0.2257)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);
 }
-function Septagon(transformation, color=black, thickness = 1){}
-function Octagon(transformation, color=black, thickness = 1){
+function Septagon(transformation, color=black, thickness = 1, style='stroke'){}
+function Octagon(transformation, color=black, thickness = 1, style='stroke'){
 	//x = 0.292893
 	// x-0.5 = -0.2071
 	// 0.5 -x = 0.2071
 	// 1-x = 0.7071
 	this.template = [new Point(-0.2071,0), new Point(0.2071,0), new Point(0.5, 0.292893), new Point(0.5, 0.7071), new Point(0.2071,1), new Point(-0.2071,1), new Point(-0.5, 0.7071), new Point(-0.5, 0.292893)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);	
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);	
 }
-function RoundedRectangle(transformation, color=black, thickness = 1){}
-function Polygon(transformation, color=black, thickness = 1){}
-function RightArrow(transformation, color=black, thickness = 1){}
-function LeftArrow(transformation, color=black, thickness = 1){}
-function UpArrow(transformation, color=black, thickness = 1){}
-function DownArrow(transformation, color=black, thickness = 1){}
-function FourStar(transformation, color=black, thickness = 1){
+function RoundedRectangle(transformation, color=black, thickness = 1, style='stroke'){}
+function Polygon(transformation, color=black, thickness = 1, style='stroke'){}
+function RightArrow(transformation, color=black, thickness = 1, style='stroke'){}
+function LeftArrow(transformation, color=black, thickness = 1, style='stroke'){}
+function UpArrow(transformation, color=black, thickness = 1, style='stroke'){}
+function DownArrow(transformation, color=black, thickness = 1, style='stroke'){}
+function FourStar(transformation, color=black, thickness = 1, style='stroke'){
 	this.template = [new Point(0,0), new Point(0.125, 0.375), new Point(0.5, 0.5), new Point(0.125, 0.625), new Point(0,1), new Point(-0.125,0.625), new Point(-0.5,0.5), new Point(-0.125, 0.375)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);		
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);		
 }
-function FiveStar(transformation, color=black, thickness = 1){
+function FiveStar(transformation, color=black, thickness = 1, style='stroke'){
 	this.template = [new Point(-0.306, 0), new Point(0.002, 0.218), new Point(0.312, 0), new Point(0.204, 0.378), new Point(0.5, 0.608), new Point(0.122, 0.618), new Point(0, 1), new Point(-0.12, 0.627), new Point(-0.5, 0.604), new Point(-0.198, 0.378)];
-	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness);		
+	Shape.call(this, map(this.template, (el) => transformation.apply(el)), transformation.size, color, thickness, style);		
 }
-function SixPointStar(transformation, color=black, thickness = 1){}
+function SixPointStar(transformation, color=black, thickness = 1, style='stroke'){}
 
 function Transformation(a,b,c,d,e,f,color=black){
 	// matrix notation for a linear transformation
@@ -359,30 +372,30 @@ Transformation.prototype.apply = function(operand){
 
 		return new Point(this.a * x + this.c * y + this.e, this.d * y + this.b * x + this.f);
 	} else if (operand instanceof Circle){
-		let r = operand.color.r + (this.r - operand.color.r)/15;
-		let g = operand.color.g + (this.g - operand.color.g)/15;
-		let b = operand.color.b + (this.bl - operand.color.b)/15;
+		let r = operand.color.r + (this.r - operand.color.r)/8;
+		let g = operand.color.g + (this.g - operand.color.g)/8;
+		let b = operand.color.b + (this.bl - operand.color.b)/8;
 
 		let newPts = map(operand.points, (el) => this.apply(el));
 		let newSize = operand.size * this.size;
 		let newClr = new Color(r,g,b);
 
-		let c = new Circle(id, newClr, operand.thickness);
+		let c = new Circle(id, newClr, operand.thickness, operand.style);
 		c.points = newPts;
 		c.size = newSize;
 
 		return c;
 	}else {
 
-		let r = operand.color.r + (this.r - operand.color.r)/15;
-		let g = operand.color.g + (this.g - operand.color.g)/15;
-		let b = operand.color.b + (this.bl - operand.color.b)/15;
+		let r = operand.color.r + (this.r - operand.color.r)/8;
+		let g = operand.color.g + (this.g - operand.color.g)/8;
+		let b = operand.color.b + (this.bl - operand.color.b)/8;
 
 		let newPts = map(operand.points, (el) => this.apply(el));
 		let newSize = operand.size * this.size;
 		let newClr = new Color(r,g,b);
 
-		return new Shape(newPts, newSize, newClr, operand.thickness);
+		return new Shape(newPts, newSize, newClr, operand.thickness, operand.style);
 	}
 }
 
@@ -443,7 +456,16 @@ Transformation.generateTransformation3 = function(start, end, unit = 1, color=bl
 let id = new Transformation(1,0,0,1,0,0); // identity transformation
 let zero = new Transformation(0,0,0,0,0,0);
 
-// Auxilliary helper functions.
+
+// ++++++++++++++++++++++++++++++ Auxilliary helper functions ++++++++++++++++++++++++++++++++++++++++++++++
+function zeroFill(number, width){
+	let s = number.toString();
+
+	while(s.length < width){
+		s = '0' + s;
+	}
+	return s;
+}
 function filter(arr, fn){
 	var result = [];
 	for(var i = 0; i < arr.length; i++){
@@ -496,268 +518,141 @@ function cache(f){
 function hexToDecimal(n){
 	// takes a hex string and returns a decimal number;
 	let map = {
-		'0':0,
-		'1':1,
-		'2':2,
-		'3':3,
-		'4':4,
-		'5':5,
-		'6':6,
-		'7':7,
-		'8':8,
-		'9':9,
-		'A':10,
-		'B':11,
-		'C':12,
-		'D':13,
-		'E':14,
-		'F':15,
-		a:10,
-		b:11,
-		c:12,
-		d:13,
-		e:14,
-		f:15
+		'0':0,'1':1,'2':2,'3':3,'4':4,'5':5,'6':6,'7':7,'8':8,'9':9,'A':10,'B':11,'C':12,'D':13,'E':14,'F':15,a:10,b:11,c:12,d:13,e:14,f:15
 	}
-	return map[n[0]] * 16 + map[n[1]];
-}
-// Container function for initializing interactive buttons in the web page.
-function initializeMenu(){
-	var styleMap = {
-		"line":Line, 
-		"circle":Circle,
-		"triangle":Triangle, 
-		"rectangle":Rectangle, 
-		"hexagon":Hexagon, 
-		"octagon":Octagon, 
-		"fourstar":FourStar, 
-		"fivestar": FiveStar,
-		"branch":Branch,
-		"grab": "grab"
-	};
-
-	var last = {
-		target: undefined,
-		class: undefined
+	let result = 0;
+	let power = 0;
+	while(n.length !== 0){
+		result += 16**power * map[n[n.length - 1]];
+		power += 1;
+		n = n.slice(0, n.length - 1);
 	}
-	var lastColor;
-	let menu = document.querySelector('#menu');
-
-	//create event handler
-	function handler(e){
-		// find target of hit
-		let target = e.target;
-
-		// control flow based on target
-		let identifier = target.getAttribute('class');
-
-		if(identifier === 'menuImage'){
-			target = target.parentNode;
-
-			// special case:
-			if (target.id === 'undo'){
-				actionObject.ctrl.z();
-				return;
-			} else if (target.id === 'redo'){
-				actionObject.ctrl.y();
-				return;
-			}
-
-			// general case:
-			meta.style = styleMap[target.id];
-
-			// add the selected target to the 'selected' class
-			let c = target.getAttribute('class');
-			target.setAttribute('class', c + ' selected');
-
-			//clear the last target
-			if(last.target === undefined){
-				last.target = target;
-				last.class = c;
-			} else {
-					last.target.setAttribute('class', last.class);
-					if(last.target === target){
-						last.target = undefined;
-						last.class = undefined;
-					} else {
-						last.target = target;
-						last.class = c;
-					}
-			}
-
-
-		} else if (identifier === 'colorBoxInterior'){
-			let p = target.parentNode;
-
-			// background color:
-			if(p.id === 'backgroundColor'){
-				// change meta.drawStyle
-				meta.colorStyle = 'backgroundColor';
-
-				//stop highlighting drawColor box
-				document.querySelector('#drawColorContainer').setAttribute('class', '');
-
-				//start highlighting backgroundColor
-				document.querySelector('#backgroundColorContainer').setAttribute('class', 'selected');
-
-			} else if(p.id === 'drawColor'){
-				//change meta.drawStyle
-				meta.colorStyle = 'drawColor';
-
-				//stop highlighting backgroundColor box;
-				document.querySelector('#backgroundColorContainer').setAttribute('class', '');
-
-				//start highlighting drawColor box
-				document.querySelector('#drawColorContainer').setAttribute('class', 'selected');
-
-			} else {
-				let color = p.id;
-
-				// change the background of 'Chosen color'
-				document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
-
-				// change meta color information.
-				if(meta.colorStyle === 'backgroundColor'){
-					meta.backgroundColor = colorMap[color];
-				}else if(meta.colorStyle ==='drawColor'){
-					meta.color = colorMap[color]; 
-				}
-			}
-		} else {
-			return;
-		}
-	}
-
-	//attatch handler to shapes menu.
-	menu.addEventListener('click', handler);
-
-	// color form handler
-	let customColor = document.querySelector('#customColor');
-	customColor.addEventListener('input', function(e){
-		let color = e.target.value;
-		if(meta.colorStyle === 'backgroundColor'){
-			meta.backgroundColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
-		} else if(meta.colorStyle === 'drawColor'){
-			meta.drawColor = new Color(color.slice(1,3), color.slice(3,5), color.slice(5,7), hex=true);
-		}
-		document.querySelector(`#${meta.colorStyle} .colorBoxInterior`).style.backgroundColor = color;
-	});
-
+	return result;
 }
 
-// limit detection.
+function decimalToHex(n){
+	let map = {0:'0', 1:'1', 2:'2', 3:'3', 4:'4', 5:'5', 6:'6', 7:'7', 8:'8', 9:'9', 10:'A', 11:'B', 12:'C', 13:'D', 14:'E', 15:'F'};
 
-function knapsack(A, r){
-	var sum = 1;
-	if (r <= 0){
-		return 0;
+	let result = "";
+	while(n !== 0){
+		result = map[n%16] + result;
+		n = Math.floor(n/16);
 	}
-	for(var i = 0; i < A.length; i++){
-		sum += knapsack(A, r-A[i]);
-	}
-
-  return sum;
-}
-knapsack = cache(knapsack);
-
-function countNodes(radii, maxSize, renderThreshold){
-	// returns the number of nodes in a tree comprised of branches of radius radii, of max root size maxSize, and of render size limit renderThreshold.
-	// assumptions:
-	//	 0 < radii[i] <= 0.9 all i
-	//   renderThreshold > 0;
-	if (radii.length === 0){
-		if (maxSize === 0){
-			return 0;
-		} else {
-			return 1;
-		}
-	}
-
-	// can improve.
-	let ratio = renderThreshold / maxSize;
-	let depths = [];
-	let maxDepth = 0;
-	for(var i = 0; i < radii.length; i++){
-		let d = Math.min(100, Math.round(Math.log(ratio)/Math.log(radii[i])));
-		depths.push(d);
-    maxDepth = Math.max(maxDepth, d);
-	}
-
-  for(var i = 0; i < radii.length; i++){
-    depths[i] = Math.floor(maxDepth / depths[i]);
-  }
-
-	let nodes = knapsack(depths, maxDepth);
-
-	return nodes;
+	return result;
 }
 
-function countOperations(radii, maxSize, renderThreshold, weight){
-	return weight * countNodes(radii, maxSize, renderThreshold);
-}
-
-function findMaxScale(radii, maxSize, renderThreshold, weight, operationLimit){
-	// Finds the maximum scale of a new branch such that it lays below the operation limit.
-
-	let l = 0;
-	let r = 0.9;
-	let count = 0;
-	let length = radii.length;
-  let m = 0;
-	while(count < 12){
-		m = (l + r) / 2
-		radii[length] = m;
-
-		let n = countOperations(radii, maxSize, renderThreshold, weight);
-
-		if( n > operationLimit){
-			r = m;
-		} else if (n === operationLimit){
-			return m;
-		} else if (n < operationLimit){
-			l = m;
-		}
-
-		count += 1 ;
-	}
-
-	radii.pop();
-	return l;
-}
-
-
-function findMaxSize(radii, maxSize, renderThreshold, weight, operationLimit){
-	// Finds the maximum size of a new trunk element
-
-	let l = 0;
-	let r = 10000;
-	let count = 0;
-  	let m = 0;
-	while(count < 12){
-		m = (l + r) / 2
-
-		let n = countOperations(radii, m, renderThreshold, weight);
-
-		if( n > operationLimit){
-			r = m;
-		} else if (n === operationLimit){
-			return m;
-		} else if (n < operationLimit){
-			l = m;
-		}
-
-		count += 1 ;
-	}
-
-	return l;
-}
-
+// draw limiting
 function setDrawLimits(){
+	function knapsack(A, r){
+		var sum = 1;
+		if (r <= 0){
+			return 0;
+		}
+		for(var i = 0; i < A.length; i++){
+			sum += knapsack(A, r-A[i]);
+		}
+
+	  return sum;
+	}
+	knapsack = cache(knapsack);
+
+	function countNodes(radii, maxSize, renderThreshold){
+		// returns the number of nodes in a tree comprised of branches of radius radii, of max root size maxSize, and of render size limit renderThreshold.
+		// assumptions:
+		//	 0 < radii[i] <= 0.9 all i
+		//   renderThreshold > 0;
+		if (radii.length === 0){
+			if (maxSize === 0){
+				return 0;
+			} else {
+				return 1;
+			}
+		}
+
+		// can improve.
+		let ratio = renderThreshold / maxSize;
+		let depths = [];
+		let maxDepth = 0;
+		for(var i = 0; i < radii.length; i++){
+			let d = Math.min(100, Math.round(Math.log(ratio)/Math.log(radii[i])));
+			depths.push(d);
+	    maxDepth = Math.max(maxDepth, d);
+		}
+
+	  for(var i = 0; i < radii.length; i++){
+	    depths[i] = Math.floor(maxDepth / depths[i]);
+	  }
+
+		let nodes = knapsack(depths, maxDepth);
+
+		return nodes;
+	}
+
+	function countOperations(radii, maxSize, renderThreshold, weight){
+		return weight * countNodes(radii, maxSize, renderThreshold);
+	}
+
+	function findMaxScale(radii, maxSize, renderThreshold, weight, operationLimit){
+		// Finds the maximum scale of a new branch such that it lays below the operation limit.
+
+		let l = 0;
+		let r = 0.9;
+		let count = 0;
+		let length = radii.length;
+	  let m = 0;
+		while(count < 12){
+			m = (l + r) / 2
+			radii[length] = m;
+
+			let n = countOperations(radii, maxSize, renderThreshold, weight);
+
+			if( n > operationLimit){
+				r = m;
+			} else if (n === operationLimit){
+				return m;
+			} else if (n < operationLimit){
+				l = m;
+			}
+
+			count += 1 ;
+		}
+
+		radii.pop();
+		return l;
+	}
+
+
+	function findMaxSize(radii, maxSize, renderThreshold, weight, operationLimit){
+		// Finds the maximum size of a new trunk element
+
+		let l = 0;
+		let r = 10000;
+		let count = 0;
+	  	let m = 0;
+		while(count < 12){
+			m = (l + r) / 2
+
+			let n = countOperations(radii, m, renderThreshold, weight);
+
+			if( n > operationLimit){
+				r = m;
+			} else if (n === operationLimit){
+				return m;
+			} else if (n < operationLimit){
+				l = m;
+			}
+
+			count += 1 ;
+		}
+
+		return l;
+	}
+
 	function cost(n){
 		if (n === 2){
 			return 1;
 		} else {
-			return n;
+			return Math.max(n/2,1);
 		}
 	}
 
@@ -767,14 +662,12 @@ function setDrawLimits(){
 	}
 
 	let maxSize = 0;
-	let weight = 0;
 	for(var i = 0; i < fractal.trunk.length; i++){
 		maxSize = Math.max(maxSize, fractal.trunk[i].size);
-		weight += cost(fractal.trunk[i].points.length)
 	}
 
-	let size = findMaxSize(radii, maxSize, meta.renderThreshold, weight, meta.operationLimit);
-	let scale = findMaxScale(radii, maxSize, meta.renderThreshold, weight, meta.operationLimit);
+	let size = findMaxSize(radii, maxSize, 4, fractal.trunk.length, meta.operationLimit);
+	let scale = findMaxScale(radii, maxSize, 4, fractal.trunk.length, meta.operationLimit);
 
 	meta.maxScale = scale;
 	meta.maxSize = size;

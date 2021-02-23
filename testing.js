@@ -1,26 +1,26 @@
 // Testing, benchmarks.
-/*
-test = true;
 
-let trans1 = new Transformation(200,0,0,200,0,0);
-let trans2 = new Transformation(0,100,-100,0,0,0);
-let trans3 = new Transformation(100,0,0,100,10,10);
+if(test){
+	var trans1 = new Transformation(200,0,0,200,0,0);
+	var trans2 = new Transformation(0,100,-100,0,0,0);
+	var trans3 = new Transformation(100,0,0,100,10,10);
 
-let trans4 = new Transformation(100,100,100,100, 100, 100);
-let trans5 = new Transformation(1,12,20,10,10,100);
-let trans6 = new Transformation(-10, -10, 100, 20, -100,-100);
+	var trans4 = new Transformation(100,100,100,100, 100, 100);
+	var trans5 = new Transformation(1,12,20,10,10,100);
+	var trans6 = new Transformation(-10, -10, 100, 20, -100,-100);
 
-let l1 = new Line(trans1, black, 1);
-let l2 = new Line(trans2);
-let l3 = new Line(trans3);
+	var l1 = new Line(trans1, black, 1);
+	var l2 = new Line(trans2);
+	var l3 = new Line(trans3);
 
-let l4 = new Line(trans4);
-let l5 = new Line(trans5);
-let l6 = new Line(trans6);
+	var l4 = new Line(trans4);
+	var l5 = new Line(trans5);
+	var l6 = new Line(trans6);
 
-let color = new Color(255,0,0);
-let colorTrans = new Transformation(100,0,0,100,0,0,color);
-let ex = colorTrans.apply(l1);
+	var color = new Color(255,0,0);
+	var colorTrans = new Transformation(100,0,0,100,0,0,color);
+	var ex = colorTrans.apply(l1);
+}
 function deepEquals(actual, expected){
 
 	function helper(actual, expected){
@@ -152,7 +152,9 @@ function fractalDrawBenchmark(){
 
 	fractal.trunk.push(l1);
 	fractal.children.push(b1);
-	fractal.children.push(b2);
+	fractal.children.push(b2);	
+
+	meta.renderThreshold = 2;
 
 	let start = Date.now();
 	fractal.draw();
@@ -166,10 +168,23 @@ function fractalDrawBenchmark(){
 	//v3 = 780 - save 2% time but removes the ability to scroll/grab, so scrapped.
 	//v4 = 780 ms - stop calculating point size, not needed.
 	//v5 = 760 ms - slight change to map function.
+
+	// new game:
+
+	// I had to roll back some of the previous changes, including the most significant one, since it disabled the ability to color the fractal =(.
+	// I'll be starting a new performance tracking log.
+
+	//v1: 1769 ms
+	//    Feb 21 2021
+	//    notes: dynamically alters renderThreshold in response to scaling. (since the user won't be able to see the small stuff anyway.
+	
+	//v2: 986 ms
+	//    Feb 21 2021
+	//    Disabled drawing of objects that are off screen.
+
+	//
 }
 
 // What is the proprtion of time spent drawing, vs calculating vectors?
 var timeDrawing = 0;
 var timeCalculating = 0;
-
-*/
