@@ -30,6 +30,25 @@ var fractal = {
 	trunk: [],
 	children: [],
 	draw: function(){
+		function helper(depth, node){
+			if(depth === meta.maxDepth || node.size < meta.renderThreshold){
+				return;
+			}
+
+			node.draw();
+			for(var i = 0; i < fractal.children.length; i++){
+				let trans = fractal.children[i].transformation;
+				helper(depth + 1, trans.apply(node));
+			}
+		}
+
+		for(var i = 0; i < fractal.trunk.length; i++){
+			helper(0, fractal.trunk[i]);
+		}
+	},
+
+	/*
+	draw: function(){
 
 		function helper(d, objArray){
 			// filter objArray, discluding small objects
@@ -55,7 +74,7 @@ var fractal = {
 		}
 
 		helper(0, fractal.trunk);
-	},
+	}, */
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
 			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, inv*meta.unit, meta.drawColor, meta.fillStyle)));
