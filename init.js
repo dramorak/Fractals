@@ -22,7 +22,7 @@ var meta = { // stores relevant information about the current drawstyle.
 	maxDepth : 100,
 	maxScale : 0.85,
 	maxSize: 10000,
-	operationLimit: 10000,
+	operationLimit: 15000,
 	unit: 100	// 1 unit is defined as 100 pixels.
 }
 
@@ -46,35 +46,6 @@ var fractal = {
 			helper(0, fractal.trunk[i]);
 		}
 	},
-
-	/*
-	draw: function(){
-
-		function helper(d, objArray){
-			// filter objArray, discluding small objects
-			objArray = filter(objArray, (obj) => obj.size > meta.renderThreshold);
-
-			if( d === meta.maxDepth || objArray.length === 0){
-				return;
-			}
-
-			// draw the elements of obj array, fill temp
-			for(var i = 0; i < objArray.length; i++){
-				objArray[i].draw();
-			}
-
-			// iterate over transformation array
-			for (var j = 0; j<fractal.children.length; j++){
-			//	for each, apply the transformation to a copy of objArray and recursively call helper.
-				let trans = fractal.children[j].transformation;
-				let newChildren = map(objArray, (el) => trans.apply(el));
-
-				helper(d + 1, newChildren);
-			}
-		}
-
-		helper(0, fractal.trunk);
-	}, */
 	pushNewObject : function(start, end){
 		if(meta.style === Branch){
 			fractal.children.push(new Branch(Transformation.generateTransformation1(start, end, inv*meta.unit, meta.drawColor, meta.fillStyle)));
@@ -367,7 +338,13 @@ function Transformation(a,b,c,d,e,f,color=black){
 Transformation.prototype.apply = function(operand){
 	// Transformation application function. Accepts points, shapes, and other transformations.
 	// Input MUST be point, shape, or transformation.
-	if(operand instanceof Transformation){
+	if(operand instanceof Point){
+		let x = operand.x;
+		let y = operand.y;
+
+		return new Point(this.a * x + this.c * y + this.e, this.d * y + this.b * x + this.f);
+
+	} else if(operand instanceof Transformation){
 		var a0 = operand.a;
 		var b0 = operand.b;
 		var c0 = operand.c;
@@ -385,11 +362,6 @@ Transformation.prototype.apply = function(operand){
 		var clr = new Color(this.r, this.b, this.g);
 
 		return new Transformation(a,b,c,d,e,f, clr);
-	}else if(operand instanceof Point){
-		let x = operand.x;
-		let y = operand.y;
-
-		return new Point(this.a * x + this.c * y + this.e, this.d * y + this.b * x + this.f);
 	} else if (operand instanceof Circle){
 		let r = operand.color.r + (this.r - operand.color.r)/8;
 		let g = operand.color.g + (this.g - operand.color.g)/8;

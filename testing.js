@@ -162,6 +162,11 @@ function fractalDrawBenchmark(){
 
 	return duration + 'ms';
 
+	// notes: I did some experiments. 
+	// 		- vector Calculation time: 227 ms
+	//      - shape drawing time: 800ms
+	//
+	//		Approximately 4/5 of the computation time is spent drawing; There must be a better way...
 	//test results:
 	//v1 = 1350 ms
 	//v2 = 803 ms  (YES!)
@@ -182,7 +187,8 @@ function fractalDrawBenchmark(){
 	//    Feb 21 2021
 	//    Disabled drawing of objects that are off screen.
 
-	//
+	
+
 }
 
 // What is the proprtion of time spent drawing, vs calculating vectors?
