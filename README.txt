@@ -9,7 +9,6 @@ todo:
 		- expensively draw up to depth 8, then uniform the color and draw adum infinitum ? 
 
 		- disable alpha
-		- use clearect
 		- secondary canvas
 		- eliminate canvas transform, only work with my own objects.
 	- change size limiter (doesn't always seem to work as wanted? );
