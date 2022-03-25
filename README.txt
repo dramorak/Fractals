@@ -1,6 +1,6 @@
 Welcome to drawFractal, a simple webapp for drawing fractals. 
 
-Purposefully build to replicate the popular graphics program 'MSPaint'. 
+Purposefully built to replicate the popular graphics program 'MSPaint'. 
 
 To begin drawing fractals, start by drawing some lines on the page. Then,
 click on the 'branches' icon at the top of the menu on the left of the page.
