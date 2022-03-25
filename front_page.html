@@ -6,9 +6,6 @@
 		<meta name="description" content="Drawfractal provides a simple, user friendly interface for creating beautiful fractal patterns.">
 		<link rel="stylesheet" href="front_page.css">
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-		<script  src="init.js"></script>
-		<script src="testing.js"></script>
-		<script  async src="main.js"></script>
 	</head>
 	<body>
 		<!-- Main Body -->
@@ -26,22 +23,24 @@
 				<div id="tools" class="menuSection">
 					<p class="sectionTitle">Tools</p>
 					<div class="sectionContent">
-						<div id='grab' class="menuItem toolItem">
+						<!--<div id='grab' class="menuItem toolItem">
 							<img src="images/handGrab.png" alt='grab' class='menuImage'>
 							<div class="informationBox">Grab screen</div>
 						</div>
 						<div id="center" class="menuItem toolItem">
 							<img src="images/center.png" alt="redo" class="menuImage">
 							<div class="informationBox">Center screen</div>
-						</div>
-						<div id='undo' class="menuItem toolItem">
-							<img src="images/undo.png" alt="undo" class="menuImage">
-							<div class="informationBox">Undo</div>
-						</div>
-						<div id='redo' class="menuItem toolItem">
-							<img src="images/redo.png" alt="redo" class="menuImage">
-							<div class="informationBox">Redo</div>
-						</div>
+						</div>-->
+                        <div class="undoContainer">
+                            <div id='undo' class="menuItem toolItem">
+                                <img src="images/undo.png" alt="undo" class="menuImage">
+                                <div class="informationBox">Undo</div>
+                            </div>
+                            <div id='redo' class="menuItem toolItem">
+                                <img src="images/redo.png" alt="redo" class="menuImage">
+                                <div class="informationBox">Redo</div>
+                            </div>
+                        </div>
 						<div class="after"></div>
 					</div>
 				</div>
@@ -87,7 +86,7 @@
 							<img src="images/outline.png" alt="outline" class="menuImage">
 						</div>
 						<div id="fill" class="menuItem">
-							<img src="images/fill.png" alt="fill" class="menuImage">
+							<img src="images/solid.png" alt="fill" class="menuImage">
 						</div>
 						<div class="after"></div>
 					</div>
@@ -125,8 +124,10 @@
 					<div id='tomato' class='colorBox'><div class="colorBoxInterior" style='background-color: tomato'></div></div>
 					<div id='white' class='colorBox'><div class="colorBoxInterior" style='background-color: white'></div></div>
 					<div class='after'></div>
-					<label for="customColor">Custom color:</label>
 					<input id="customColor" class='rgb' type="color">
+					<label for="customColor">Custom color</label>
+                    <input type="range" id="fading" name="fading" min="0" max="100">
+                    <label for="fading" id="fadeLabel">Fade</label>
 				</div>
 				<div id="file" class="menuSection">
 					<p class="sectionTitle">File</p>
@@ -160,10 +161,12 @@
 				</div>
 				-->
 			</div>
-			<canvas>
+            <div id="canvasHolder">
+			<canvas id="backgroundCanvas">
 				<!-- content when browser does not support canvas  -->
 				<img id="centerpiece" alt="Everywhere you look, infinity." src="images/graphic.webp">
 			</canvas>
+            </div>
 			<div id="thicknessInputMenu" class="thicknessInputMenuContainer">
 				<div id="one" class="thicknessOption"><img src="images/one.png" alt="one" class="menuImage"></div>
 				<div id="two" class="thicknessOption"><img src="images/two.png" alt="two" class="menuImage"></div>
@@ -173,18 +176,26 @@
 		</main>
 
 		<footer>
+            <!-- 
 			<div id='blog' class='hyperlinks'><a href="interesting stuff/interesting stuff.html">blog</a></div>
 			<div id='' class='hyperlinks'><a href="">tutoring</div>
-			<!--<div id='patreon' class='hyperlinks'>If you like the website, and would like to buy me a coffee:</div>-->
+
+			<div id='patreon' class='hyperlinks'>If you like the website, and would like to buy me a coffee:</div>-->
 			<div class='personal'>
 				<a href="https://github.com/dramorak" ><img class='pictures' src='images/GitHub-Mark/PNG/github.png' alt='linkedin'></a>
 			</div>
+            <!-- 
 			<div class='personal'>
 				<a href="mailto:alexdinglis@gmail.com" ><img class='pictures' src='images/Gmail-logo.png' alt='gmail'></a>
 			</div>
 			<div class='personal'>
 				<a href="https://www.linkedin.com/in/alexander-inglis/" ><img class='pictures' src='images/linkedin.png' alt='linkedin'></a>
 			</div>
+            -->
 		</footer>
+
+		<script src="init.js"></script>
+		<script src="testing.js"></script>
+		<script src="main.js"></script>
 	</body>
 </html> 
