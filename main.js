@@ -3,9 +3,19 @@
     - make testing suite
         - test on Chrome/Edge/firefox/opera (safari?);
         - test on different computers.
+            - firefox menu boxes *increase* in size, causing misplacement
+        - *new* button still doesn't work
+    -Adapt for mobile use
+    
+    -add google adsense
+    -read up on marketing (google search)
+    -market product (reddit, facebook, twitter)
+
+    
 
     EXPANSION
     - grab / zoom tools.
+    - snap to angle
 
     KNOWN BUGS
     - lags when adding too many normal objects. Maybe try adding canvases as batches
@@ -57,6 +67,12 @@
         irrelevant? 
             - screen translation / zoom / rotation (non linear transformations too?)
             - moving objects wrt time
+
+    Had josh use the program
+        -change the draw order so that new input is added immediately. He assumed there was lag, which is not what I want.
+        -He didn't immediately realize how to clear the initial fractal
+            -update 'new' button to totally undo, instead of refresh?
+            - 
 */
 
 // Container function for initializing interactive buttons in the web page.
@@ -161,6 +177,7 @@ function initializeMenu() {
           save();
         }
         setTimeout(() => window.location.replace(window.location.href), 1000);
+
       } else {
         // general cases:
         meta.style = styleMap[target.id];

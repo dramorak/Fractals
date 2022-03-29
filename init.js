@@ -24,9 +24,10 @@ var meta = {
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.
   maxScale: 0.98, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
   maxSize: 10000, // deprecated
-  operationLimit: 4000, // number of draw operations called in a single frame.
+  operationLimit: 6000, // number of draw operations called in a single frame.
   unit: 200, // 1 unit is defined as 100 pixels.
 };
+var metaCopy = {...meta}; //copy original state, in case we need to restore later.
 
 var fractal = {
   objects: [],
@@ -38,6 +39,8 @@ var fractal = {
     stack: [], // stack
   },
   draw: function () {
+    // draw top elements first
+
     while (fractal.drawState.i < fractal.objects.length) {
       // Trunk section
       //  push local state onto stack, if empty.
@@ -59,7 +62,7 @@ var fractal = {
         if (i == 0) {
           // if It's the first time encountering this node.
           node.draw(fractal.contexts[fractal.drawState.i]);
-          fractal.drawState.opcount += 1;
+          fractal.drawState.opcount += Math.max(1, node.points.length - 1); // number of lines in the image
         }
         if (i == fractal.branches.length) {
           // If all children of this node have been drawn
@@ -70,7 +73,7 @@ var fractal = {
         } else {
           //otherwise
 
-          //update current node todraw number
+          //update current node drawn number
           fractal.drawState.stack[fractal.drawState.stack.length - 1] += 1;
 
           //push new node onto the stack
@@ -79,7 +82,7 @@ var fractal = {
           fractal.drawState.stack.push(0); // push todo variable.
         }
         //If oplimit has been reached, stop drawing.
-        if (fractal.drawState.opcount == meta.operationLimit) {
+        if (fractal.drawState.opcount >= meta.operationLimit) {
           fractal.drawState.opcount = 0;
           return;
         }
@@ -134,8 +137,6 @@ var fractal = {
       );
     } else {
       // drawobject
-      //NOTE Pushing an object is less violent, but some care is needed.
-
       //create a canvas
       const ctx = createCanvas();
 
@@ -154,7 +155,11 @@ var fractal = {
 
       //push an object onto fractal.objects
       let trans = Transformation.generateTransformation3(start, end);
-      fractal.objects.push(new type(trans, drawColor, thickness, fillStyle, fade));
+      let new_obj = new type(trans, drawColor, thickness, fillStyle, fade)
+      fractal.objects.push(new_obj);
+
+      //draw the depth 0 object immediately
+      new_obj.draw(ctx);
     }
   },
 
@@ -173,7 +178,7 @@ var fractal = {
       fractal.resetState();
       // clear all canvases.
       fractal.contexts.forEach((ctx) => clear(ctx));
-    } else {
+    } else { // if object
       if (fractal.objects.length == 0) {
         return;
       }
@@ -189,7 +194,8 @@ var fractal = {
       fractal.objects.pop();
       //remove the context from array, then delete it.
       let ctx = fractal.contexts.pop();
-      ctx.canvas.parentElement.removeChild(ctx.canvas);
+      //ctx.canvas.parentElement.removeChild(ctx.canvas);
+      ctx.canvas.remove();
     }
   },
 };
@@ -460,12 +466,12 @@ function Hexagon(
   // x = 0.2257
   // 1-x = 0.7743
   this.template = [
-    new Point(0, 0),
-    new Point(0.5, 0.2257),
-    new Point(0.5, 0.7743),
     new Point(0, 1),
-    new Point(-0.5, 0.7743),
-    new Point(-0.5, 0.2257),
+    new Point(0.433, 0.75),
+    new Point(0.433, 0.25),
+    new Point(0, 0),
+    new Point(-0.433, 0.25),
+    new Point(-0.433, 0.75),
   ];
   Shape.call(
     this,
