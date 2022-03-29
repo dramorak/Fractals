@@ -18,7 +18,7 @@ var meta = {
   backgroundColor: new Color(255, 255, 255), // background color
   fillStyle: "stroke", // outline vs fill
   clrscale: 16, //controls color fading. Higher value indicates slower fading.
-  fadeVal: 0.56, // controls how quickly colors fade into the fractal.
+  fadeVal: 0.4, // controls how quickly colors fade into the fractal.
 
   renderThreshold: 1, // limits drawing of objects to those whose sizes are larger than this value
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.

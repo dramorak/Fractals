@@ -6,6 +6,7 @@
             - firefox menu boxes *increase* in size, causing misplacement
         - *new* button still doesn't work
     -Adapt for mobile use
+    -fix formatting on different screens
     
     -add google adsense
     -read up on marketing (google search)
@@ -462,33 +463,18 @@ function keydownHandler(e) {
 window.addEventListener("keydown", keydownHandler);
 
 //Draw a nice initial fractal.
+
 pushFractal(
-  new Point(0, 0),
-  new Point(0, 100),
-  Line,
-  meta.drawColor,
-  2,
-  meta.fillStyle,
-  meta.fadeVal
-);
-pushFractal(
-  new Point(0, 100),
-  new Point(-100, 200),
-  Branch,
-  new Color(20, 175, 0),
-  2,
-  meta.fillStyle,
-  meta.fadeVal
-);
-pushFractal(
-  new Point(0, 100),
-  new Point(100, 200),
-  Branch,
-  new Color(20, 175, 0),
-  2,
-  meta.fillStyle,
-  meta.fadeVal
-);
+    new Point(0,0),
+    new Point(0,100),
+    Line,
+    meta.drawColor,
+    2,
+    meta.fillStyle,
+    meta.fadeVal
+)
+meta.style = Branch
+meta.drawColor = colorMap.green;
 
 //Object renderer
 objectRenderArray.push(fractal);
