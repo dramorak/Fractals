@@ -32,11 +32,11 @@ main {
   left: 0px;
   z-index: 2;
 
-  width: 130px;
+  width: 142px;
 
   background-color: rgb(245, 246, 247);
   border-right: 4px solid rgb(197, 207, 223);
-  overflow: hidden;
+  overflow: scroll;
 
   text-align: center;
   font-size: small;
@@ -291,4 +291,17 @@ a {
 }
 a:hover {
   text-decoration: underline;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+::-webkit-scrollbar-thumb:hover{
+    background:#555;
+}
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
 }

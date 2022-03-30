@@ -7,12 +7,13 @@
         - *new* button still doesn't work
     -Adapt for mobile use
     -fix formatting on different screens
+    - small menu on smaller screens. 
+        - align bottom?
+        - different inputs for mobile divices?
     
     -add google adsense
     -read up on marketing (google search)
     -market product (reddit, facebook, twitter)
-
-    
 
     EXPANSION
     - grab / zoom tools.
@@ -103,8 +104,8 @@ function initializeMenu() {
     ten: 10,
   };
   var last = {
-    target: undefined,
-    class: undefined,
+    target: document.querySelector('#branch'),
+    class: "branchContainer",
   };
   var thicknessInputMenu_isOpen = false;
   let menu = document.querySelector("#menu");
@@ -412,6 +413,12 @@ function mouseupHandler(e) {
 
   // update state
   mousedown = false;
+
+  //remove branch indicators
+  if (meta.style == Branch){
+      objectRenderArray.pop();
+      objectRenderArray.pop();
+  }
 }
 function mousedownHandler(e) {
   if (e.button === 0) {
@@ -425,6 +432,17 @@ function mousedownHandler(e) {
 
     // add to fractal.
     fractal.push(start, start, meta.style, meta.drawColor, meta.thickness, meta.fillStyle, meta.fadeVal);
+
+    // add scale/rotation indicators to base canvas
+    if (meta.style == Branch){
+        // add circle to canvas
+        let newP = windowToCanvas(e)
+        let c = new Circle(new Transformation(meta.unit*2*meta.maxScale, 0, 0, meta.unit*2*meta.maxScale, newP.x, newP.y - 196), colorMap.orange, 1);
+        objectRenderArray.push(c);
+
+        // add new line to canvas
+        objectRenderArray.push(new Line(Transformation.generateTransformation3(newP, newP)));
+    }
   }
 }
 
@@ -463,7 +481,6 @@ function keydownHandler(e) {
 window.addEventListener("keydown", keydownHandler);
 
 //Draw a nice initial fractal.
-
 pushFractal(
     new Point(0,0),
     new Point(0,100),
@@ -501,6 +518,11 @@ function render(timestamp) {
         meta.fillStyle,
         meta.fadeVal
       );
+
+      if (meta.style == Branch){
+          objectRenderArray.pop();
+          objectRenderArray.push(new Line(Transformation.generateTransformation3(start, end, meta.unit, colorMap.black, 0, meta.unit*meta.maxScale), colorMap.orange));
+      }
     }
 
     //clear

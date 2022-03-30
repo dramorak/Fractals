@@ -24,7 +24,7 @@ var meta = {
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.
   maxScale: 0.98, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
   maxSize: 10000, // deprecated
-  operationLimit: 6000, // number of draw operations called in a single frame.
+  operationLimit: 4000, // number of draw operations called in a single frame.
   unit: 200, // 1 unit is defined as 100 pixels.
 };
 var metaCopy = {...meta}; //copy original state, in case we need to restore later.
@@ -764,14 +764,15 @@ Transformation.generateTransformation3 = function (
   end,
   unit = 1,
   color = black,
-  fade = 0
+  fade = 0,
+  maxSize = meta.maxSize
 ) {
   //absolute rotation.
   let dx = end.x - start.x;
   let dy = end.y - start.y;
 
   let angle = Math.atan2(dy, dx) - Math.PI / 2;
-  let h = Math.min((dx ** 2 + dy ** 2) ** 0.5, meta.maxSize);
+  let h = Math.min((dx ** 2 + dy ** 2) ** 0.5, maxSize);
 
   var a = h * cos(angle);
   var b = h * sin(angle);
