@@ -1,11 +1,11 @@
-4138
+4143
 70C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@babel132930087176969770 1
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\HK.js132930087202176271 0
 105C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\customevent.js132930087200486269 0
 58C:\Users\dramo\Dram's programs\Webapps\drawfractal\main.js132930813106110376 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\ordered-binary\README.md132930087192531102 0
 81C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\svgo\lib\style.js132930087197566271 0
-55C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist132931540230298958 1
+55C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist132931563361576867 1
 89C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\terser\lib\utils\index.js132930087196056275 0
 62C:\Users\dramo\Dram's programs\Webapps\drawfractal\favicon.ico132582028708889363 0
 68C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\svgo132930087197916275 1
@@ -20,7 +20,7 @@
 77C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\node-releases132930087192101106 1
 77C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\graph132930087194256277 1
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\terser\dist\package.json132930087197136277 0
-61C:\Users\dramo\Dram's programs\Webapps\drawfractal\index.html132931359835656582 0
+61C:\Users\dramo\Dram's programs\Webapps\drawfractal\index.html132931555820371407 0
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\import-fresh\index.js132930087190425915 0
 107C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\hash\parcel-hash.linux-x64-gnu.node132930087195946269 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\parcel_sourcemap_wasm\Cargo.toml132930087198156294 0
@@ -29,7 +29,7 @@
 114C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\css-text-orientation.js132930087200206266 0
 109C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\optimizer-htmlnano\lib\svgMappings.js132930087191651128 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\src\projectPath.js132930087198646295 0
-64C:\Users\dramo\Dram's programs\Webapps\drawfractal\fractals.html132931539819193951 0
+64C:\Users\dramo\Dram's programs\Webapps\drawfractal\fractals.html132931563203819984 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\weak-lru-cache\README.md132930087192671117 0
 70C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\dotenv132930087191981110 1
 74C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\source-map132930087194136273 1
@@ -48,7 +48,7 @@
 65C:\Users\dramo\Dram's programs\Webapps\drawfractal\front_page.css132931507489523655 0
 100C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\GitHub-Mark\PNG\GitHub-Mark-Light-64px.png130360976640000000 0
 94C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\node-resolver-core\src132930087197426280 1
-57C:\Users\dramo\Dram's programs\Webapps\drawfractal\images132931494655851776 1
+57C:\Users\dramo\Dram's programs\Webapps\drawfractal\images132931554960928932 1
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\csso\lib\replace\property\font-weight.js132930087195766272 0
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\msgpackr\dist\test.js132930087193716284 0
 113C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\runtime-js\src\helpers\bundle-manifest.js132930087191751141 0
@@ -141,7 +141,7 @@
 70C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\terser132930087197256277 1
 69C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\clone132930087192051114 1
 103C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\reporter-cli\src\CLIReporter.js132930087192756285 0
-76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\favicon.4e02265d.ico132931540217418051 0
+76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\favicon.4e02265d.ico132931556170508403 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\SM.js132930087205381611 0
 100C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\tls1-1.js132930087206011621 0
 76C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite132930087207051647 1
@@ -328,7 +328,7 @@
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\nan_typedarray_contents.h132930087195026293 0
 82C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\doc\v8_misc.md132930087196586272 0
 98C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\lib\RequestTracker.js132930087198766272 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.4e6858d8.js.map132931540230168964 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.4e6858d8.js.map132931556187367962 0
 69C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\json5132930087193816273 1
 122C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\runtime-service-worker\lib\ServiceWorkerRuntime.js132930087190625912 0
 87C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\is-arrayish\.travis.yml132930087192511116 0
@@ -524,7 +524,7 @@
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\chrome-trace-event\package.json132930087190595912 0
 113C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lmdb\libraries\liblmdb\mtest3.c132930087197636265 0
 97C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\lib\public\Bundle.js132930087195896276 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.776e4b07.js.map132931540230168964 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.776e4b07.js.map132931556187367962 0
 109C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\posthtml\node_modules\posthtml-parser\license132930087190175910 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\transformer-postcss\lib132930087192631117 1
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\SI.js132930087205351616 0
@@ -747,7 +747,7 @@
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\supports-color\readme.md132930087191711110 0
 92C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\weak-lru-cache\tests\test.js132930087192181123 0
 107C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\passwordrules.js132930087204456269 0
-75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\github.54b155eb.png132931540220618216 0
+75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\github.54b155eb.png132931556171908404 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\weak-lru-cache\dist\index.cjs132930087190185924 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\v8-compile-cache\LICENSE132930087190155915 0
 107C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\css-gradients.js132930087199406283 0
@@ -1124,7 +1124,7 @@
 73C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dist132930087198916285 1
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\node-resolver-core\src\_empty.js132930087190995913 0
 92C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\terser\lib\compress\index.js132930087196006278 0
-78C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.9c6b219d.css.map132931540230138934 0
+78C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.9c6b219d.css.map132931556187357973 0
 77C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\nan_new.h132930087194176272 0
 89C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\utils\src\hash.js132930087194926282 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\MM.js132930087203796268 0
@@ -1407,7 +1407,7 @@
 94C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\src\loadDotEnv.js132930087197966298 0
 108C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\dom-serializer\node_modules\entities\LICENSE132930087190155915 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lz4\LICENSE132930087194056288 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fourstar.8d7dabae.png132931540227738982 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fourstar.8d7dabae.png132931556178578429 0
 109C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\abortcontroller-polyfill\dist\cjs-ponyfill.js132930087192591108 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\posthtml-render\dist\index.d.ts132930087192261109 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\posthtml-render\dist\index.js132930087190575906 0
@@ -1425,7 +1425,7 @@
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\posthtml-parser\dist\index.d.ts132930087192681113 0
 86C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\json5\lib\unicode.d.ts132930087194696290 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\ZW.js132930087207031613 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\four.1f21477c.png132931540218438048 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\four.1f21477c.png132931556172898394 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\posthtml-parser\dist\index.js132930087191005912 0
 84C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\json5\lib\unicode.js132930087193156283 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\fs\src\NodeFS.js132930087193006293 0
@@ -1665,9 +1665,8 @@
 114C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\htmlnano\lib\modules\deduplicateAttributeValues.js132930087192796294 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\regions\NP.js132930087204176267 0
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\doc\persistent.md132930087196306273 0
-81C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\doc\scopes.md132930087196386273 0
-76C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\mandlebrot set.jpg132931492267866132 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lz4\lib\lz4.h132930087198466312 0
+81C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\doc\scopes.md132930087196386273 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lmdb\libraries\liblmdb\mdb_load.c132930087196586272 0
 87C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\nan\doc\string_bytes.md132930087196496277 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@swc\helpers\lib\_instanceof.js132930087196516269 0
@@ -1677,7 +1676,7 @@
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\is-arrayish\README.md132930087190855908 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\dist\node.js132930087193066307 0
 90C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\msgpackr-extract\.circleci132930087198086277 1
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.4e6858d8.js132931540230138934 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.4e6858d8.js132931556187357973 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\cosmiconfig\dist\types.js.map132930087195636276 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\msgpackr-extract\.github132930087198106268 1
 101C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\csso\lib\replace\AttributeSelector.js132930087193526280 0
@@ -1926,7 +1925,7 @@
 96C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\events\src\Disposable.js132930087191155939 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lmdb\libraries\liblmdb\mdb_dump.c132930087196486278 0
 111C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\fs-search\fs-search.win32-x64-msvc.node132930087196296274 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.11169039.js132931540230138934 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.11169039.js132931556187357973 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lmdb\libraries\liblmdb\mdb_load.1132930087195436275 0
 111C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\test\fixtures\context\package.json132930087199566282 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\lmdb\dependencies\lmdb\libraries\liblmdb\mdb_stat.1132930087195606287 0
@@ -2128,6 +2127,7 @@
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\es6-module.js132930087201006274 0
 96C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\htmlnano\docs\docs\030-config.md132930087197186281 0
 97C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\htmlnano\docs\docs\050-modules.md132930087197406274 0
+81C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\dragon curve.2f72a13a.jpg132931556171908404 0
 82C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\domutils\readme.md132930087194276277 0
 83C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\has-flag\index.d.ts132930087190395913 0
 112C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\html-media-capture.js132930087202216278 0
@@ -2182,7 +2182,7 @@
 91C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\entities\lib\index.d.ts.map132930087194516277 0
 115C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\test\fixtures\custom-format-infer-type132930087199596281 1
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\entities\lib\index.js132930087192916272 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\redo.ea1fde69.png132931540218428051 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\redo.ea1fde69.png132931556172888395 0
 108C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\css-cross-fade.js132930087199096273 0
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\entities\lib\maps\legacy.json132930087193456277 0
 99C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\caniuse-lite\data\features\sha-2.js132930087205301609 0
@@ -2488,6 +2488,7 @@
 96C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\css-tree\lib\syntax\node\Rule.js132930087198606288 0
 100C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\css-tree\lib\syntax\node\Selector.js132930087198646295 0
 106C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\test\fixtures\invalid-targets132930087199736277 1
+83C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\mandelbrot set.077c14a0.jpg132931556178588413 0
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\css-tree\lib\syntax\node\SelectorList.js132930087198676280 0
 74C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\example\fern.png132585159612823891 0
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\css-tree\lib\syntax\node\TypeSelector.js132930087198906269 0
@@ -3273,12 +3274,12 @@
 83C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\base-x\src\index.js132930087190195932 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\resolver-default132930087191455905 1
 81C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@trysound\sax\lib132930087190385907 1
-74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.9c6b219d.css132931540230138934 0
+74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.9c6b219d.css132931556187357973 0
 84C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\ansi-styles\index.js132930087190435916 0
 88C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\ansi-styles\package.json132930087190885911 0
 85C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\ansi-styles\readme.md132930087191315914 0
 122C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\runtime-service-worker\src\ServiceWorkerRuntime.js132930087191125917 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\undo.37779f9c.png132931540227738982 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\undo.37779f9c.png132931556178578429 0
 73C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\acorn\bin132930087189985904 1
 82C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\acorn\CHANGELOG.md132930087192926277 0
 74C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\acorn\dist132930087194036286 1
@@ -3403,7 +3404,7 @@
 98C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\namer-default\package.json132930087191575913 0
 101C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@swc\helpers\lib\_get_prototype_of.js132930087196216275 0
 99C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@swc\helpers\lib\_inherits_loose.js132930087196356271 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\save.37cf8422.png132931540218438048 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\save.37cf8422.png132931556172898394 0
 97C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\workers\lib\childState.js132930087192671117 0
 103C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\graph\test\ContentGraph.test.js132930087193086273 0
 112C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@swc\helpers\lib\_is_native_reflect_construct.js132930087196706270 0
@@ -3646,14 +3647,14 @@
 102C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\transformer-babel\lib\types.js132930087194216275 0
 87C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\dist132930087194726290 1
 93C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\index.d.ts132930087198196268 0
-74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\solid.8d82c98e.png132931540227738982 0
+74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\solid.8d82c98e.png132931556178578429 0
 104C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\parcel_sourcemap_wasm132930087198126273 1
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\core\lib\Environment.js132930087197496272 0
 99C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\src\SourceMap.js132930087193716284 0
 95C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\src\utils.js132930087194206267 0
 110C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\package-manager\src\JSONParseStream.js132930087194826294 0
 107C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\src\wasm-bindings-web.js132930087194436276 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fivestar.79c3bdb4.png132931540218438048 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fivestar.79c3bdb4.png132931556172898394 0
 103C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\src\wasm-bindings.js132930087194636276 0
 94C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\src\wasm.js132930087194926282 0
 108C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\source-map\parcel_sourcemap_wasm\src132930087198066272 1
@@ -3765,7 +3766,7 @@
 91C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\LICENSE132930087190125938 0
 106C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\src\CJSOutputFormat.js132930087191135908 0
 98C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\src\helpers.js132930087193596276 0
-72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\new.c602e8d9.png132931540220618216 0
+72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\new.c602e8d9.png132931556171908404 0
 96C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\src\index.js132930087193896296 0
 106C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\lib\CJSOutputFormat.js132930087190645919 0
 106C:\Users\dramo\Dram's programs\Webapps\drawfractal\node_modules\@parcel\packager-js\lib\ESMOutputFormat.js132930087192741102 0
@@ -4104,6 +4105,7 @@
 69C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\hexagon.png132582006394379150 0
 66C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\line.png132572077118282299 0
 70C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\linkedin.svg132547872274661686 0
+76C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\mandelbrot set.jpg132931492267866132 0
 69C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\outline.png132585036846700206 0
 71C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\rectangle.png132572077705991855 0
 66C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\redo.png132585252783288745 0
@@ -4119,21 +4121,24 @@
 82C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\example\spiral power.png132589522799279011 0
 80C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\example\starstruck.png132585902320899301 0
 75C:\Users\dramo\Dram's programs\Webapps\drawfractal\images\example\wheat.png132589517018879270 0
-75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\branch.3f797a16.png132931540220608228 0
-75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\circle.ed528ea2.png132931540218438048 0
-69C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fractals.html132931540230138934 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\graphic.94566973.webp132931540217418051 0
-76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\hexagon.082fcc9f.png132931540218438048 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.11169039.js.map132931540230138934 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.776e4b07.js132931540230138934 0
-66C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.html132931540230138934 0
-83C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\koch snowflake.29c3a787.png132931540220598222 0
-73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\line.3a065575.png132931540227738982 0
-76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\octagon.26967a81.png132931540220618216 0
-72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\one.dfb4d1e9.png132931540218438048 0
-76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\outline.c60b66c7.png132931540220618216 0
-78C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\rectangle.88a20fff.png132931540227738982 0
-74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\sizes.b2dfac4c.png132931540220608228 0
-74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\three.ba1381bf.png132931540227738982 0
-77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\triangle.47d6d8d7.png132931540220608228 0
-72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\two.630632ae.png132931540220618216 0
+75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\branch.3f797a16.png132931556171898397 0
+75C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\circle.ed528ea2.png132931556172898394 0
+69C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\fractals.html132931563361566872 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\graphic.94566973.webp132931556166068432 0
+76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\hexagon.082fcc9f.png132931556172888395 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.11169039.js.map132931556187357973 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.776e4b07.js132931556187357973 0
+66C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\index.html132931556187347982 0
+83C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\koch snowflake.29c3a787.png132931556172898394 0
+73C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\line.3a065575.png132931556178578429 0
+83C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\loadresources.2478efa9.html132931550959494319 0
+83C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\mandlebrot set.077c14a0.jpg132931550950314403 0
+76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\octagon.26967a81.png132931556171898397 0
+72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\one.dfb4d1e9.png132931556172898394 0
+76C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\outline.c60b66c7.png132931556171908404 0
+78C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\rectangle.88a20fff.png132931556178578429 0
+85C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\SierpinskiCarpet.b7dd44be.png132931556172898394 0
+74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\sizes.b2dfac4c.png132931556171898397 0
+74C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\three.ba1381bf.png132931556178578429 0
+77C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\triangle.47d6d8d7.png132931556171898397 0
+72C:\Users\dramo\Dram's programs\Webapps\drawfractal\dist\two.630632ae.png132931556171908404 0

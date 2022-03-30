@@ -71,14 +71,14 @@
                 border: 1px solid black;
                 width:200px;
                 height:200px;
+
+                display:none;
             }
             .article{
                 padding-left: 30px;
                 padding-right:30px;
             }
-            img {
-                display:block;
-            }
+
             h2 {
                 text-align: center;
             }
@@ -114,27 +114,31 @@
                 </div>
             </div>
             <div class="centerpiece">
-                <img src="images/koch snowflake.png" alt="Koch Snowflake">                    
+                <img src="images/koch snowflake.png" alt="Koch Snowflake" id="koch">
+                <img src="images/graphic.webp" alt="Tree Fractal" id="tree">
+                <img src="images/dragon curve.jpg" alt="Dragon Curve" id="dragon">
+                <img src="images/mandelbrot set.jpg" alt="Mandlebrot Set" id="mandlebrot">
+                <img src="images/SierpinskiCarpet.png" alt="Sierpinsky Carpet" id="sierpinski">
             </div>
         </div>
         <footer>
             <div class="links">
-                <a href="https://github.com/dramorak"><img class='pictures' src='images/GitHub-Mark/PNG/github.png' alt='github profile'></a>
+                <a href="https://github.com/dramorak"><img class='pictures' src='images/GitHub-Mark/PNG/github.png' alt='github profile' display="block"></a>
             </div>
         </footer>
         <script>
             //change images every 5 seconds
-            let imgEl = document.querySelector('.centerpiece img');
-            let imgs  = ['images/graphic.webp', 'images/dragon curve.jpg', 'images/mandlebrot set.jpg', 'images/SierpinskiCarpet.png', 'images/koch snowflake.png']
-            function f(i){
-                function g(){
-                    imgEl.src = imgs[i];
-                    window.setTimeout( f((i + 1)%imgs.length), 5000)
-                }
-                return g;
+            let images = ['#koch','#tree','#dragon','#mandlebrot','#sierpinski'];
+            let i = 0;
+            function changeImage(){
+                //set previous to 'none'
+                document.querySelector(images[i]).style.display = 'none';
+                //set cur to 'block'
+                i = (i + 1) % images.length;
+                document.querySelector(images[i]).style.display = 'block';
             }
-            window.setTimeout(f(0),5000);
-
+            changeImage();
+            window.setInterval(changeImage,5000);
         </script>
     </body>
 </html>
