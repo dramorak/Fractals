@@ -5,12 +5,16 @@
         - test on different computers.
             - firefox menu boxes *increase* in size, causing misplacement
         - *new* button still doesn't work
-    -Adapt for mobile use
-    -fix formatting on different screens
-    - small menu on smaller screens. 
-        - align bottom?
-        - different inputs for mobile divices?
+    -test on mobile devices
     
+    -SEO
+    -include structured data
+    -do sitemap 
+    -add social media links
+        -test open graph with dist
+        Twitter: https://cards-dev.twitter.com/validator
+        Facebook: https://developers.facebook.com/tools/debug/
+        Pinterest: https://developers.pinterest.com/tools/url-debugger/
     -add google adsense
     -read up on marketing (google search)
     -market product (reddit, facebook, twitter)
@@ -316,13 +320,13 @@ if (!ctx) {
 var width = (canvas.width = window.innerWidth);
 var height = (canvas.height = window.innerHeight - 36);
 
-ctx.setTransform(1, 0, 0, -1, Math.floor(width / 2), Math.floor(height / 2));
+ctx.setTransform(1, 0, 0, -1, width/2 + 71, height/2);
 
 function resetCoordinates() {
   // reset base canvas.
   width = canvas.width = window.innerWidth;
   height = canvas.height = window.innerHeight - 36;
-  ctx.setTransform(1, 0, 0, -1, width / 2, height / 2);
+  ctx.setTransform(1, 0, 0, -1, width / 2 + 71, height / 2);
 
   boundaries.updateBoundaries();
 
@@ -334,7 +338,7 @@ function resetCoordinates() {
     can.width = width;
     can.height = height;
     //set transform
-    c.setTransform(1, 0, 0, -1, width / 2, height / 2);
+    c.setTransform(1, 0, 0, -1, width / 2 + 71, height / 2);
     //clear
     clear(c);
   }
@@ -436,12 +440,11 @@ function mousedownHandler(e) {
     // add scale/rotation indicators to base canvas
     if (meta.style == Branch){
         // add circle to canvas
-        let newP = windowToCanvas(e)
-        let c = new Circle(new Transformation(meta.unit*2*meta.maxScale, 0, 0, meta.unit*2*meta.maxScale, newP.x, newP.y - 196), colorMap.orange, 1);
+        let c = new Circle(new Transformation(meta.unit*2*meta.maxScale, 0, 0, meta.unit*2*meta.maxScale, start.x, start.y - 196), colorMap.orange, 1);
         objectRenderArray.push(c);
 
         // add new line to canvas
-        objectRenderArray.push(new Line(Transformation.generateTransformation3(newP, newP)));
+        objectRenderArray.push(new Line(Transformation.generateTransformation3(start, start)));
     }
   }
 }
@@ -451,18 +454,67 @@ function updateMouseCoords(e) {
   mouse.x = pt.x;
   mouse.y = pt.y;
 }
+// handlers for touch screens - Basically just passes onto the mouse handles, since they already do all the work.
+
+function fingerDownHandler(e){
+
+    touch = e.changedTouches[0];
+
+    // update mouse coordinates NOTE: due to differences between 'mousemove' and 'touchmove', I need to manually update mouse coordinates on touchdown.
+    let newp = windowToCanvas(touch);
+    mouse.x = newp.x;
+    mouse.y = newp.y;
+
+    //create new mouse event
+    let event = new MouseEvent("mousedown", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    });
+
+    // issue mousedown event
+    canvas.dispatchEvent(event);
+
+    return;
+}
+
+function fingerMoveHandler(e){
+    touch = e.changedTouches[0];
+
+    let event = new MouseEvent("mousemove", {
+        clientX: touch.clientX,
+        clientY: touch.clientY
+    })
+
+    window.dispatchEvent(event);
+    return;
+}
+function fingerUpHandler(e){
+
+    touch = e.changedTouches[0];
+
+    let event = new MouseEvent("mouseup", {
+        clientX: touch.cleintX,
+        clientY: touch.clientY
+    })
+
+    window.dispatchEvent(event);
+    return
+}
 
 canvas.addEventListener("mousedown", mousedownHandler);
 window.addEventListener("mouseup", mouseupHandler);
-//window.addEventListener('mousemove', mousemoveHandler);
 window.addEventListener("mousemove", updateMouseCoords);
+
+canvas.addEventListener("touchstart", fingerDownHandler);
+window.addEventListener("touchend", fingerUpHandler);
+window.addEventListener("touchmove", fingerMoveHandler);
 
 // Coordinate transformation from current window to wider system
 function windowToCanvas(e) {
   // inverse of canvas to window.
   return new Point(
-    e.clientX - Math.floor(width / 2),
-    -(e.clientY - Math.floor(height / 2))
+    e.clientX - width / 2 - 71,
+    -(e.clientY - height / 2)
   );
 }
 
@@ -491,7 +543,7 @@ pushFractal(
     meta.fadeVal
 )
 meta.style = Branch
-meta.drawColor = colorMap.green;
+meta.drawColor = colorMap.lawngreen;
 
 //Object renderer
 objectRenderArray.push(fractal);

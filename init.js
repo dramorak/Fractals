@@ -146,8 +146,8 @@ var fractal = {
         0,
         0,
         -1,
-        Math.floor(width / 2),
-        Math.floor(height / 2)
+        width/2 + 71,
+        height/2
       );
 
       //add context to the list of contexts.
@@ -796,7 +796,7 @@ function clear(ctx) {
   // Apply it to (0,0, width, height)
   // then call clearRect on that transformed value.
   // but since I know what kind of transformation storedTransform is, I can shortcut it, without having to calculate the inverse.
-  ctx.clearRect(-width / 2, -height / 2, width, height);
+  ctx.clearRect(-width / 2 - 71, -height / 2, width, height);
 }
 
 function createCanvas() {
