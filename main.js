@@ -6,15 +6,11 @@
             - firefox menu boxes *increase* in size, causing misplacement
         - *new* button still doesn't work
     -test on mobile devices
-    
+        -scrolling issues
+        -highlighting issues
     -SEO
     -include structured data
     -do sitemap 
-    -add social media links
-        -test open graph with dist
-        Twitter: https://cards-dev.twitter.com/validator
-        Facebook: https://developers.facebook.com/tools/debug/
-        Pinterest: https://developers.pinterest.com/tools/url-debugger/
     -add google adsense
     -read up on marketing (google search)
     -market product (reddit, facebook, twitter)
@@ -22,8 +18,8 @@
     EXPANSION
     - grab / zoom tools.
     - snap to angle
-
-    KNOWN BUGS
+    - tool for more general transformation (particularly reflections, (non linear?))
+    KNOWN BUGS  
     - lags when adding too many normal objects. Maybe try adding canvases as batches
     - when outside elements are highlighted, user input is wonky 
         - unfixable with current knowledge (how do I know when elements are highlighted?)
@@ -264,6 +260,9 @@ function initializeMenu() {
   menu.addEventListener("click", handler);
   thicknessInputMenu.addEventListener("click", handler);
 
+  menu.addEventListener('touchstart', handler);
+  thicknessInputMenu.addEventListener('touchstart', handler);
+  
   // color form handler
   function setColor(e) {
     let color = e.target.value;
@@ -457,6 +456,7 @@ function updateMouseCoords(e) {
 // handlers for touch screens - Basically just passes onto the mouse handles, since they already do all the work.
 
 function fingerDownHandler(e){
+    e.preventDefault(); 
 
     touch = e.changedTouches[0];
 
@@ -478,6 +478,8 @@ function fingerDownHandler(e){
 }
 
 function fingerMoveHandler(e){
+    e.preventDefault();
+
     touch = e.changedTouches[0];
 
     let event = new MouseEvent("mousemove", {
@@ -485,10 +487,11 @@ function fingerMoveHandler(e){
         clientY: touch.clientY
     })
 
-    window.dispatchEvent(event);
+    document.querySelector('body').dispatchEvent(event);
     return;
 }
 function fingerUpHandler(e){
+    e.preventDefault();
 
     touch = e.changedTouches[0];
 
@@ -497,17 +500,17 @@ function fingerUpHandler(e){
         clientY: touch.clientY
     })
 
-    window.dispatchEvent(event);
+    document.querySelector('body').dispatchEvent(event);
     return
 }
 
 canvas.addEventListener("mousedown", mousedownHandler);
-window.addEventListener("mouseup", mouseupHandler);
-window.addEventListener("mousemove", updateMouseCoords);
+document.querySelector('body').addEventListener("mouseup", mouseupHandler);
+document.querySelector('body').addEventListener("mousemove", updateMouseCoords);
 
 canvas.addEventListener("touchstart", fingerDownHandler);
-window.addEventListener("touchend", fingerUpHandler);
-window.addEventListener("touchmove", fingerMoveHandler);
+document.querySelector('body').addEventListener("touchend", fingerUpHandler);
+document.querySelector('body').addEventListener("touchmove", fingerMoveHandler);
 
 // Coordinate transformation from current window to wider system
 function windowToCanvas(e) {

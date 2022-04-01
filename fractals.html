@@ -60,19 +60,16 @@
 
                 background-color: #f93800;
                 padding: 1px;
-
-                display:flex;
-                flex-direction:column;
-                align-items: center;
-                justify-content:center;
-
             }
             .centerpiece img{
-                border: 1px solid black;
+                position:absolute;
+                left:75px;
+                top:75px;
                 width:200px;
                 height:200px;
 
-                display:none;
+                opacity:0;
+                border: 1px solid black;
             }
             .article{
                 padding-left: 30px;
@@ -128,16 +125,28 @@
         </footer>
         <script>
             //change images every 5 seconds
-            let images = ['#koch','#tree','#dragon','#mandlebrot','#sierpinski'];
+            let images = ['#sierpinski','#mandlebrot','#dragon','#tree','#koch'];
             let i = 0;
             function changeImage(){
-                //set previous to 'none'
-                document.querySelector(images[i]).style.display = 'none';
-                //set cur to 'block'
-                i = (i + 1) % images.length;
-                document.querySelector(images[i]).style.display = 'block';
+                // skeleton
+            // scale i to opacity of 0 over .5 seconds
+                function reduceOpacity(i){
+                    function helper(){
+                        if (document.querySelector(images[i]).style.opacity > 0){
+                        document.querySelector(images[i]).style.opacity -= 0.1;
+                        window.setTimeout(helper, 50);
+                        }
+                    }
+                    return helper;
+                }
+                window.setTimeout(reduceOpacity(i),50);
+                
+                // set i + 1 to opacity of 1
+                i = (i + 1)% images.length;
+                document.querySelector(images[i]).style.opacity = 1;
             }
-            changeImage();
+            document.querySelector('#sierpinski').style.opacity = 1;
+
             window.setInterval(changeImage,5000);
         </script>
     </body>
