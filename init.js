@@ -22,7 +22,7 @@ var meta = {
 
   renderThreshold: 1, // limits drawing of objects to those whose sizes are larger than this value
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.
-  maxScale: 0.98, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
+  maxScale: 0.95, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
   maxSize: 10000, // deprecated
   operationLimit: 4000, // number of draw operations called in a single frame.
   unit: 200, // 1 unit is defined as 100 pixels.
@@ -62,7 +62,7 @@ var fractal = {
         if (i == 0) {
           // if It's the first time encountering this node.
           node.draw(fractal.contexts[fractal.drawState.i]);
-          fractal.drawState.opcount += Math.max(1, node.points.length - 1); // number of lines in the image
+          fractal.drawState.opcount += node.drawTime; // number of lines in the image
         }
         if (i == fractal.branches.length) {
           // If all children of this node have been drawn
@@ -356,6 +356,7 @@ function Shape(
 }
 function Line(transformation, color = black, thickness = 1, style = "stroke", fade = 0) {
   this.template = [new Point(0, 0), new Point(0, 1)];
+  this.drawTime = 1.5;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -380,6 +381,7 @@ function Triangle(
   fade = 0
 ) {
   this.template = [new Point(-0.5, 0), new Point(0.5, 0), new Point(0, 1)];
+  this.drawTime = 3;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -406,6 +408,7 @@ function Circle(
   fade = 0
 ) {
   this.template = [new Point(0, 0.5)];
+  this.drawTime = 4;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -440,6 +443,7 @@ function Rectangle(
     new Point(0.5, 1),
     new Point(-0.5, 1),
   ];
+  this.drawTime = 4;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -473,6 +477,7 @@ function Hexagon(
     new Point(-0.433, 0.25),
     new Point(-0.433, 0.75),
   ];
+  this.drawTime = 6;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -510,6 +515,7 @@ function Octagon(
     new Point(-0.5, 0.7071),
     new Point(-0.5, 0.292893),
   ];
+  this.drawTime = 8;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -573,6 +579,7 @@ function FourStar(
     new Point(-0.5, 0.5),
     new Point(-0.125, 0.375),
   ];
+  this.drawTime = 8;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -602,6 +609,7 @@ function FiveStar(
     new Point(-0.5, 0.604),
     new Point(-0.198, 0.378),
   ];
+  this.drawTime = 10;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),
@@ -637,7 +645,7 @@ function Transformation(a, b, c, d, e, f, color = black, fade = 0) {
   this.b = b;
   this.c = c;
   this.d = d;
-  this.e = e;
+  this.e = e;   
   this.f = f;
 
   this.xscale = (a ** 2 + b ** 2) ** 0.5;
@@ -706,7 +714,9 @@ Transformation.prototype.apply = function (operand) {
     let newSize = operand.size * this.size;
     let newClr = new Color(r, g, b);
 
-    return new Shape(newPts, newSize, newClr, operand.thickness, operand.style, operand.fade);
+    let newShp = new Shape(newPts, newSize, newClr, operand.thickness, operand.style, operand.fade);
+    newShp.drawTime = operand.drawTime;
+    return newShp;
   }
 };
 
@@ -801,12 +811,12 @@ function clear(ctx) {
 
 function createCanvas() {
   // creates a new canvas. Returns a reference to that canvas's context.
-  let canvas = document.createElement("canvas");
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight - 36;
-  document.querySelector("#canvasHolder").appendChild(canvas);
+  let newCanvas = document.createElement("canvas");
+  newCanvas.width = width;
+  newCanvas.height = height;
+  document.querySelector("#canvasHolder").appendChild(newCanvas);
 
-  let ctx = canvas.getContext("2d");
+  let ctx = newCanvas.getContext("2d");
 
   return ctx;
 }

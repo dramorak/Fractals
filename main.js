@@ -14,7 +14,8 @@
     -add google adsense
     -read up on marketing (google search)
     -market product (reddit, facebook, twitter)
-
+    -custom color doesn't work on mobile
+    
     EXPANSION
     - grab / zoom tools.
     - snap to angle
@@ -76,7 +77,7 @@
             -update 'new' button to totally undo, instead of refresh?
             - 
 */
-
+let isMobile = window.matchMedia("only screen and (max-width: 1000px)").matches;
 // Container function for initializing interactive buttons in the web page.
 function initializeMenu() {
   var styleMap = {
@@ -318,6 +319,16 @@ if (!ctx) {
 
 var width = (canvas.width = window.innerWidth);
 var height = (canvas.height = window.innerHeight - 36);
+if (isMobile){
+    //reduce processor burden
+    meta.operationLimit = 1000;
+
+    //change canvas height
+    height = (canvas.height = window.innerHeight);
+
+    //hide 'file' options, because they don't work.
+    document.querySelector('#file').style.display = 'none';
+}
 
 ctx.setTransform(1, 0, 0, -1, width/2 + 71, height/2);
 
@@ -439,7 +450,7 @@ function mousedownHandler(e) {
     // add scale/rotation indicators to base canvas
     if (meta.style == Branch){
         // add circle to canvas
-        let c = new Circle(new Transformation(meta.unit*2*meta.maxScale, 0, 0, meta.unit*2*meta.maxScale, start.x, start.y - 196), colorMap.orange, 1);
+        let c = new Circle(new Transformation(meta.unit*2*meta.maxScale, 0, 0, meta.unit*2*meta.maxScale, start.x, start.y - meta.maxScale * meta.unit), colorMap.orange, 1);
         objectRenderArray.push(c);
 
         // add new line to canvas
@@ -478,7 +489,6 @@ function fingerDownHandler(e){
 }
 
 function fingerMoveHandler(e){
-    e.preventDefault();
 
     touch = e.changedTouches[0];
 
