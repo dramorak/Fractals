@@ -86,6 +86,10 @@ main {
   display: block;
 }
 
+.turboModeSection:hover .informationBox{
+    display:block;
+}
+
 #stroke {
   width: 63px;
   height: 16px;
@@ -346,8 +350,9 @@ a:hover {
     #customColorLabel {
         display:none;
     }
+    */
     #file {
         display:none;
     }
-    */
+    
 }

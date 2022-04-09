@@ -7,12 +7,12 @@
                 - mobile filing options
                 - mobile performance
         :PREP
-            -sitemap
-            -structured data
             DISTRIBUTION
             - look into dist package on npm
             - post to bluehost
             - make advertisement video
+            -sitemap
+            -structured data
         :RELEASE
             MARKET
             - post to facebook
@@ -305,9 +305,8 @@ function initializeMenu() {
       y: 0
   }
   body.addEventListener('touchstart', e => {
-      e.preventDefault();
-
       
+      if (e.target == canvas){e.preventDefault();}
       let touch = e.changedTouches[0];
 
       touchStart.x = touch.clientX;
@@ -322,8 +321,7 @@ function initializeMenu() {
       touch.target.dispatchEvent(newEvent);
   }, {passive: false});
   body.addEventListener('touchmove', e =>{
-    e.preventDefault();
-
+    if (e.target == canvas){e.preventDefault();}
     let touch = e.changedTouches[0];
 
     let newEvent = new MouseEvent('mousemove', {
@@ -335,8 +333,7 @@ function initializeMenu() {
     touch.target.dispatchEvent(newEvent);    
   },{passive: false})
   body.addEventListener('touchend', e =>{
-    e.preventDefault();
-
+    if (e.target == canvas){e.preventDefault();}
     let touch = e.changedTouches[0];
 
     let newEvent = new MouseEvent('mouseup', {
@@ -347,6 +344,7 @@ function initializeMenu() {
     })
     touch.target.dispatchEvent(newEvent);
     
+    /*
     if (((touchStart.x - touch.clientX) ** 2 + (touchStart.y - touch.clientY) **2) ** (0.5) < 4){
         // click event has occured.
         newEvent = new MouseEvent('click', {
@@ -356,7 +354,7 @@ function initializeMenu() {
             bubbles: true
         })
         touch.target.dispatchEvent(newEvent)
-    }
+    }*/
   },{passive: false})  
 
   // color form handler
@@ -391,6 +389,16 @@ function initializeMenu() {
   }
   let fadeRange = document.querySelector('#fading');
   fadeRange.addEventListener("input", setFade);
+
+  //turbo mode handler
+  function turboMode(e) {
+      if (e.target.checked){
+          meta.maxScale = 0.95;
+      } else {
+          meta.maxScale = metaCopy.maxScale;
+      }
+  }
+  document.querySelector('#turbo-mode').addEventListener('change', turboMode);
 
   //canvas cursor handler.
   const canvas = document.querySelector("canvas");

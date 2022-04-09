@@ -22,12 +22,12 @@ var meta = {
 
   renderThreshold: 1, // limits drawing of objects to those whose sizes are larger than this value
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.
-  maxScale: 0.8, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
+  maxScale: 0.73, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
   maxSize: 10000, // deprecated
   operationLimit: 4000, // number of draw operations called in a single frame.
   unit: 200, // 1 unit is defined as 100 pixels.
 };
-var metaCopy = {...meta}; //copy original state, in case we need to restore later.
+const metaCopy = {...meta}; //copy original state, in case we need to restore later.
 
 var fractal = {
   objects: [],
