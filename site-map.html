@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head>
+        <title>Dramorak's sitemap</title>
+        <meta name="description" conten="A sitemap for all of dramorak's content.">
+		<meta charset="utf-8" >
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+        <style>
+            html, body {
+                margin: 0px;
+                background-color: rgb(30, 30, 35);
+                color: rgb(235, 235, 235);
+                font-family: "Lucida Console"
+            }
+            main {
+                display: flex;
+            }
+            .left {
+                flex: 1 1 25%;
+            }
+            .middle {
+                flex: 1 1 50%;
+
+                display:flex;
+                flex-direction: column;
+            }
+            .header {
+                flex: 1 1 auto;
+
+                margin: 10px 0 60px 0;
+            }
+            .header h1{
+                color: rgb(194, 0, 0);
+            }
+            .content {
+                flex: 15 1 auto;
+                margin: 10px 0 20px 0;
+                line-height:1.5em;
+            }
+            .content h2 {
+                margin: 40px 0 20px 0;
+                color: rgb(194, 0, 0);
+            }
+            .content p {
+                margin: 20px 0 10px 0;
+            }
+            .footer {
+                flex: 1 1 auto;
+                margin:  0 0 20px 0;
+                display:flex;
+                flex-direction: row-reverse;
+                align-items: center;
+
+                font-size:x-small;
+            }
+            .right {
+                flex: 1 1 25%;
+            }
+            a {
+                text-decoration: none;
+                color: rgb(92, 92, 209);
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <div class="left"></div>
+            <div class="middle">
+                <div class="header">
+                    <h1>Sitemap</h1>
+                    <div><strong>Dramorak</strong> 2022-04-09</div>
+                </div>
+                <div class="content">
+                    <h2>Links</h2>
+                    <ul>
+                        <li><a href="index.html">branchbranchbranch</a><ul>
+                            <li><a href="fractals.html">What are fractals?</a></li>
+                            <li><a href="how_to_draw_infinity.html">Drawing infinite objects in finite time</a></li>
+                        </ul></li>
+                    </ul>
+                </div>
+                <div class="footer">
+                    <div>Dramorak © 2022</div>
+                </div>
+            </div>
+            <div class="right"></div>
+        </main>    
+    </body>
+</html>

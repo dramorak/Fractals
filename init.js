@@ -337,10 +337,10 @@ function Shape(
       y - this.size >= boundaries.top
     ) {
       return;
-    } else if (this.size < 2){
+    } /*else if (this.size < 2){
         ctx.fillStyle = this.color;
         ctx.fillRect(this.points[0].x, this.points[0].y, this.size, this.size);
-    }else {
+    } */else {
       if (this.style === "stroke" || this.points.length === 2) {
         ctx.lineWidth = this.thickness;
         ctx.strokeStyle = this.color;
@@ -359,7 +359,7 @@ function Shape(
 }
 function Line(transformation, color = black, thickness = 1, style = "stroke", fade = 0) {
   this.template = [new Point(0, 0), new Point(0, 1)];
-  this.drawTime = 1.2;
+  this.drawTime = 1.4;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),

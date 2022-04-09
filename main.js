@@ -8,11 +8,11 @@
                 - mobile performance
         :PREP
             DISTRIBUTION
-            - look into dist package on npm
-            - post to bluehost
+            X look into dist package on npm
+            X post to bluehost
             - make advertisement video
-            -sitemap
-            -structured data
+            X sitemap (html/xml)
+            X structured data
         :RELEASE
             MARKET
             - post to facebook
