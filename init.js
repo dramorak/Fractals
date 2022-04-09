@@ -22,7 +22,7 @@ var meta = {
 
   renderThreshold: 1, // limits drawing of objects to those whose sizes are larger than this value
   maxDepth: 100, // limits max depth. Sort of deprecated, switched to size limitation.
-  maxScale: 0.95, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
+  maxScale: 0.8, // limits the max scale of a transformation. Must be less than one, otherwise it won't converge, and the program will run infinitely.
   maxSize: 10000, // deprecated
   operationLimit: 4000, // number of draw operations called in a single frame.
   unit: 200, // 1 unit is defined as 100 pixels.
@@ -337,7 +337,10 @@ function Shape(
       y - this.size >= boundaries.top
     ) {
       return;
-    } else {
+    } else if (this.size < 2){
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.points[0].x, this.points[0].y, this.size, this.size);
+    }else {
       if (this.style === "stroke" || this.points.length === 2) {
         ctx.lineWidth = this.thickness;
         ctx.strokeStyle = this.color;
@@ -356,7 +359,7 @@ function Shape(
 }
 function Line(transformation, color = black, thickness = 1, style = "stroke", fade = 0) {
   this.template = [new Point(0, 0), new Point(0, 1)];
-  this.drawTime = 1.5;
+  this.drawTime = 1.2;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),

@@ -4,14 +4,11 @@
         <title>What are fractals?</title>
         <meta charset="utf-8">
         <meta name="content" description="A guide to beautiful, scintillating, infinite fractals.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">    
         <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100&display=swap" rel="stylesheet">
         <style>
             * {
-                font-family: 'Roboto', sans-serif;
-                font-size: 103%;
+                font-family: "Lucida Console", monaco;
             }
             html {
                 min-height: 100vh;
@@ -32,14 +29,27 @@
                 flex: 14 1 auto;
 
                 display: flex;
-                flex-direction: row;
+                flex-direction: row-reverse;
             }
             footer {
                 flex: 1 1 0;
-
+                
                 display:flex;
                 flex-direction: row-reverse;
                 align-items: center;
+
+                font-size:x-small;
+            }
+            .hyperlinks{
+                display:flex;
+                align-items:center;
+                justify-content:center;
+            }
+            a {
+                text-decoration: none;            
+            }
+            a:hover {
+                text-decoration:underline;
             }
             .one {
                 flex: 4 1 40%;
@@ -52,19 +62,19 @@
                 flex: 5 1 50%;
             }
             .centerpiece {
-                position: absolute;
+                position: fixed;
                 right: calc(10px + 50%) ;
                 top: 20%;
                 width: 350px;
-                height: 60%;
+                height: 350px;
 
                 background-color: #f93800;
                 padding: 1px;
             }
             .centerpiece img{
-                position:absolute;
-                left:75px;
-                top:75px;
+                position:fixed;
+                right:calc(85px + 50%);
+                top:calc(20% + 75px);
                 width:200px;
                 height:200px;
 
@@ -82,50 +92,45 @@
         </style>
     </head>
     <body>
+        <!-- 1536 686 -->
         <div class="head">
         </div>
         <div class="content">
-            <div class="one">
-                
-            </div>
-            <div class="two">
-                
-            </div>
             <div class="three">
                 <div class="article">
                     <h2>What are fractals?</h2>
-                    <p>    Fractals are mathematical objects which display detail in infinitely small sections. Many fractals, including the ones 
-                        created in <a href=index.html>this site's fractal generation program</a>, exhibit self-similarity: If you take a small part of the fractal, and 
-                        zoom in as far as you want, that small part will contain a <i>complete</i> copy of the whole image.<br><br><br>
-                        
-                        The history of fractals ranges from primarily theoretical studies, to modern day computer graphics. The first observerd instances 
-                        of fractal scaling were in some African societies, whose villages were composed of circular buildings arranged in circular
-                        patterns. As a branch of mathematics, the field began taking shape in the 17th century, but it wasn't until centuries later,
-                        with the work of Georg Cantor, that the discipline truly began to enter the public consciousness. <br><br><br>
-                        
-                        As the field has grown, so too has the number of canonical examples. Nowadays, there are many named fractals: Mandelbrot sets, 
-                        Sierpinski carpet, Koch snowflakes, and Julia sets, to name a few.<br><br><br>
-                        Beautiful and in many ways mysterious, fractals have captured the imagination of mathematicians and academics for centuries. Try making your
-                        <a href="index.html">own!</a>
+                    <p>    Fractals are mathematical objects that display <em>self-similarity</em>. Self-similarity is when small sections of the
+                           object are revealed to be, through close scrutiny, complete copies of the original image! If you look really close, you'll see the same image again and again and again!<br><br>
+                           Fractals can often be observed in nature as natural processes play themselves out identically at different scales. The 
+                           branching of lightning bolts, the dance of flame, even conscious thought; fractals and recursion are everywhere you look.<br><br>
+                           You don't have to be a mathematician to appreciate the beauty! Try making your <a href="index.html">own</a>!
+
                     </p>
                 </div>
             </div>
+            <div class="two"></div>
+            <div class="one"></div>
             <div class="centerpiece">
-                <img src="images/koch snowflake.png" alt="Koch Snowflake" id="koch">
-                <img src="images/graphic.webp" alt="Tree Fractal" id="tree">
-                <img src="images/dragon curve.jpg" alt="Dragon Curve" id="dragon">
-                <img src="images/mandelbrot set.jpg" alt="Mandlebrot Set" id="mandlebrot">
-                <img src="images/SierpinskiCarpet.png" alt="Sierpinsky Carpet" id="sierpinski">
+                <img src="images/example/bloody leaf.png" alt="bloody leaf" id="leaf">
+                <img src="images/example/color.png" alt="color" id="color">
+                <img src="images/example/deep blue.png" alt="blue" id="blue">
+                <img src="images/example/fern.png" alt="fern" id="fern">
+                <img src="images/example/seaweed.png" alt="seaweed" id="seaweed">
+                <img src="images/example/Sierpiński triangle.png" alt="Sierpiński triangle" id="sierp">
+                <img src="images/example/spiral power.png" alt="Spiral power" id="spiral">
+                <img src="images/example/starstruck.png" alt="starstruck" id="starstruck">
+                <img src="images/example/wheat.png" alt="wheat" id="wheat">
             </div>
         </div>
         <footer>
-            <div class="links">
-                <a href="https://github.com/dramorak"><img class='pictures' src='images/GitHub-Mark/PNG/github.png' alt='github profile' display="block"></a>
+            <div class="hyperlinks">
+            If you like what I do consider
+            <a style="color: #bca300" target="_blank" href="https://buymeacoffee.com/dramorak">☕️ buying me a coffee</a>
             </div>
         </footer>
         <script>
             //change images every 5 seconds
-            let images = ['#sierpinski','#mandlebrot','#dragon','#tree','#koch'];
+            let images = ['#wheat','#starstruck','#spiral','#sierp','#seaweed','#fern','#blue','#color','#leaf'];
             let i = 0;
             function changeImage(){
                 // skeleton
@@ -145,7 +150,7 @@
                 i = (i + 1)% images.length;
                 document.querySelector(images[i]).style.opacity = 1;
             }
-            document.querySelector('#sierpinski').style.opacity = 1;
+            document.querySelector('#wheat').style.opacity = 1;
 
             window.setInterval(changeImage,5000);
         </script>

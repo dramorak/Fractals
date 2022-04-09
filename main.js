@@ -1,5 +1,34 @@
 /*
     TODO
+    Roadmap to full release:
+        :DEV
+            - Test
+                - mobile custom color
+                - mobile filing options
+                - mobile performance
+        :PREP
+            -sitemap
+            -structured data
+            DISTRIBUTION
+            - look into dist package on npm
+            - post to bluehost
+            - make advertisement video
+        :RELEASE
+            MARKET
+            - post to facebook
+            - post to reddit
+                - post to 
+            - post to twitter
+            - imgur
+            - tumblr
+            - youtube (video?)
+            - pinterest
+            - instagram
+            - tumblr
+            - flickr
+            - Digg
+
+        
     - make testing suite
         - test on Chrome/Edge/firefox/opera (safari?);
         - test on different computers.
@@ -14,8 +43,12 @@
     -add google adsense
     -read up on marketing (google search)
     -market product (reddit, facebook, twitter)
+    -depth first to a depth of 4-5 ? Makes it easier to draw.
+
+    MOBILE ISSUES
     -custom color doesn't work on mobile
-    
+    -scrolling / input on menu should be seperate.
+    -    
     EXPANSION
     - grab / zoom tools.
     - snap to angle
@@ -77,7 +110,7 @@
             -update 'new' button to totally undo, instead of refresh?
             - 
 */
-let isMobile = window.matchMedia("only screen and (max-width: 1000px)").matches;
+let isMobile = window.matchMedia("only screen and (max-width: 916px)").matches; // I can't figure out how to deduce performance, so I'm just estimating based on screen size.
 // Container function for initializing interactive buttons in the web page.
 function initializeMenu() {
   var styleMap = {
@@ -110,6 +143,7 @@ function initializeMenu() {
   };
   var thicknessInputMenu_isOpen = false;
   let menu = document.querySelector("#menu");
+  let body = document.querySelector('body');
   let thicknessInputMenu = document.querySelector("#thicknessInputMenu"); //
 
   //create event handler
@@ -261,9 +295,70 @@ function initializeMenu() {
   menu.addEventListener("click", handler);
   thicknessInputMenu.addEventListener("click", handler);
 
-  menu.addEventListener('touchstart', handler);
-  thicknessInputMenu.addEventListener('touchstart', handler);
-  
+  // send touch events to document
+  // touchstart = mousedown
+  // touchmove  = mousemove
+  // touchend   = mouseup
+  // touchstart + low movement + touchend = click
+  touchStart = {
+      x: 0,
+      y: 0
+  }
+  body.addEventListener('touchstart', e => {
+      e.preventDefault();
+
+      
+      let touch = e.changedTouches[0];
+
+      touchStart.x = touch.clientX;
+      touchStart.y = touch.clientY;
+
+      let newEvent = new MouseEvent('mousedown', {
+        clientX: touch.clientX,
+        clientY: touch.clientY,
+        button: 0,
+        bubbles: true
+      }) 
+      touch.target.dispatchEvent(newEvent);
+  }, {passive: false});
+  body.addEventListener('touchmove', e =>{
+    e.preventDefault();
+
+    let touch = e.changedTouches[0];
+
+    let newEvent = new MouseEvent('mousemove', {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      button: 0,
+      bubbles: true
+    })
+    touch.target.dispatchEvent(newEvent);    
+  },{passive: false})
+  body.addEventListener('touchend', e =>{
+    e.preventDefault();
+
+    let touch = e.changedTouches[0];
+
+    let newEvent = new MouseEvent('mouseup', {
+      clientX: touch.clientX,
+      clientY: touch.clientY,
+      button: 0,
+      bubbles: true
+    })
+    touch.target.dispatchEvent(newEvent);
+    
+    if (((touchStart.x - touch.clientX) ** 2 + (touchStart.y - touch.clientY) **2) ** (0.5) < 4){
+        // click event has occured.
+        newEvent = new MouseEvent('click', {
+            clientX: touch.clientX,
+            clientY: mouse.clientY,
+            button: 0,
+            bubbles: true
+        })
+        touch.target.dispatchEvent(newEvent)
+    }
+  },{passive: false})  
+
   // color form handler
   function setColor(e) {
     let color = e.target.value;
@@ -322,12 +417,6 @@ var height = (canvas.height = window.innerHeight - 36);
 if (isMobile){
     //reduce processor burden
     meta.operationLimit = 1000;
-
-    //change canvas height
-    height = (canvas.height = window.innerHeight);
-
-    //hide 'file' options, because they don't work.
-    document.querySelector('#file').style.display = 'none';
 }
 
 ctx.setTransform(1, 0, 0, -1, width/2 + 71, height/2);
@@ -441,7 +530,8 @@ function mousedownHandler(e) {
     let start = windowToCanvas(e);
     x = start.x;
     y = start.y;
-
+    mouse.x = x;
+    mouse.y = y;
     mousedown = true;
 
     // add to fractal.
@@ -466,61 +556,9 @@ function updateMouseCoords(e) {
 }
 // handlers for touch screens - Basically just passes onto the mouse handles, since they already do all the work.
 
-function fingerDownHandler(e){
-    e.preventDefault(); 
-
-    touch = e.changedTouches[0];
-
-    // update mouse coordinates NOTE: due to differences between 'mousemove' and 'touchmove', I need to manually update mouse coordinates on touchdown.
-    let newp = windowToCanvas(touch);
-    mouse.x = newp.x;
-    mouse.y = newp.y;
-
-    //create new mouse event
-    let event = new MouseEvent("mousedown", {
-        clientX: touch.clientX,
-        clientY: touch.clientY
-    });
-
-    // issue mousedown event
-    canvas.dispatchEvent(event);
-
-    return;
-}
-
-function fingerMoveHandler(e){
-
-    touch = e.changedTouches[0];
-
-    let event = new MouseEvent("mousemove", {
-        clientX: touch.clientX,
-        clientY: touch.clientY
-    })
-
-    document.querySelector('body').dispatchEvent(event);
-    return;
-}
-function fingerUpHandler(e){
-    e.preventDefault();
-
-    touch = e.changedTouches[0];
-
-    let event = new MouseEvent("mouseup", {
-        clientX: touch.cleintX,
-        clientY: touch.clientY
-    })
-
-    document.querySelector('body').dispatchEvent(event);
-    return
-}
-
 canvas.addEventListener("mousedown", mousedownHandler);
 document.querySelector('body').addEventListener("mouseup", mouseupHandler);
 document.querySelector('body').addEventListener("mousemove", updateMouseCoords);
-
-canvas.addEventListener("touchstart", fingerDownHandler);
-document.querySelector('body').addEventListener("touchend", fingerUpHandler);
-document.querySelector('body').addEventListener("touchmove", fingerMoveHandler);
 
 // Coordinate transformation from current window to wider system
 function windowToCanvas(e) {
