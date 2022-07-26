@@ -1,3 +1,7 @@
+/*
+
+/*This program is copyright under the GPL. For a complete copy of the licence, see the 'copying.txt' file in the main folder.*/
+
 /* ++++++++++++++++++++++++++++++++++++++++++++++++++++
  Object/Function definition page 
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++ */
@@ -359,7 +363,7 @@ function Shape(
 }
 function Line(transformation, color = black, thickness = 1, style = "stroke", fade = 0) {
   this.template = [new Point(0, 0), new Point(0, 1)];
-  this.drawTime = 1.4;
+  this.drawTime = 1.6;
   Shape.call(
     this,
     map(this.template, (el) => transformation.apply(el)),

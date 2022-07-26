@@ -1,3 +1,5 @@
+/*This program is copyright under the GPL. For a complete copy of the licence, see the 'copying.txt' file in the main folder.*/
+
 /*
     TODO
     Roadmap to full release:
@@ -10,7 +12,7 @@
             DISTRIBUTION
             X look into dist package on npm
             X post to bluehost
-            - make advertisement video
+            X make advertisement video
             X sitemap (html/xml)
             X structured data
         :RELEASE
@@ -647,11 +649,15 @@ function render(timestamp) {
 }
 
 // Final initialization.
-initializeMenu();
+window.addEventListener('load', function(){
 
-if (startRender) {
-  render();
-}
-if (test) {
-  console.log(`Total time: ${fractalDrawBenchmark()}`);
-}
+    initializeMenu();
+
+    if (startRender) {
+      render();
+    }
+    if (test) {
+      console.log(`Total time: ${fractalDrawBenchmark()}`);
+    }
+    
+})
