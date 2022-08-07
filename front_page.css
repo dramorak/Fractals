@@ -308,8 +308,12 @@ footer {
 .pictures {
   height: 30px;
   width: 30px;
+  padding-left:5px;
+  padding-right:5px;
 }
-
+.pictures:hover {
+    background-color:rgba(100, 141, 229, 0.3);
+}
 a {
   color: rgb(80, 80, 80);
   text-decoration: none;
